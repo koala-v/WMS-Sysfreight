@@ -13,7 +13,6 @@
     "cordova-plugin-camera",
     "cordova-plugin-console",
     "cordova-plugin-contacts",
-    "cordova-plugin-crosswalk-webview",
     "cordova-plugin-datepicker",
     "cordova-plugin-device",
     "cordova-plugin-dialogs",
@@ -37,7 +36,8 @@
     "cordova-plugin-actionsheet",
     "cordova-plugin-inappbrowser",
     "cordova-plugin-whitelist",
-    "cordova-sqlite-storage"
+    "cordova-sqlite-storage",
+    "cordova-plugin-crosswalk-webview"
   ],
   "cordovaPlatforms": [
     "android"
