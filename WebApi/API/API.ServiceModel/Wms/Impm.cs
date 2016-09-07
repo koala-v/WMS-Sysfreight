@@ -19,6 +19,7 @@ namespace WebApi.ServiceModel.Wms
         public string ProductCode { get; set; }
         public string TrxNo { get; set; }
         public string WarehouseCode { get; set; }
+        public string CustomerCode { get; set; }
         public string StoreNo { get; set; }
     }
     public class Impm_Logic
@@ -62,6 +63,10 @@ namespace WebApi.ServiceModel.Wms
                     {
                         strSql = strSql + "Where (CASE Impm1.DimensionFlag When '1' THEN Impm1.BalancePackingQty When '2' THEN Impm1.BalanceWholeQty ELSE Impm1.BalanceLooseQty END) >0 AND ProductCode='" + request.ProductCode + "'";
                     }
+                    else if (!string.IsNullOrEmpty(request.WarehouseCode) && !string.IsNullOrEmpty(request.StoreNo))
+                    {
+                        strSql = strSql + "Where (CASE Impm1.DimensionFlag When '1' THEN Impm1.BalancePackingQty When '2' THEN Impm1.BalanceWholeQty ELSE Impm1.BalanceLooseQty END) >0 AND WarehouseCode='" + Modfunction.SQLSafe(request.WarehouseCode) + "' And StoreNo='" + Modfunction.SQLSafe(request.StoreNo) + "'";
+                    }
                     else if (!string.IsNullOrEmpty(request.TrxNo))
                     {
                         strSql = strSql + "Where TrxNo = " + int.Parse(request.TrxNo);
@@ -86,6 +91,10 @@ namespace WebApi.ServiceModel.Wms
                                     "From Impm1 Join (Select (Select top 1 Imit1.StatusCode from imit1 Where imit1.GoodsTransferNoteNo = a.GoodsReceiveorIssueNo) AS ImitStatus, a.TrxNo, " +
                                     "(CASE a.DimensionFlag When '1' THEN a.BalancePackingQty When '2' THEN a.BalanceWholeQty ELSE a.BalanceLooseQty END) AS QtyBal From Impm1 a ) b on b.TrxNo = impm1.TrxNo " +
                                     "Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0";
+                    if (request.CustomerCode != null && request.CustomerCode != "")
+                    {
+                        strSql = strSql + " AND CustomerCode = " + Modfunction.SQLSafeValue(request.CustomerCode);
+                    }
                     Results = db.Select<Impm1_Transfer>(strSql);
                     for (int i = 0; i < Results.Count; i++)
                     {

@@ -35,10 +35,36 @@
                     </ui-select>
                 </div>
             </div>
+            <div class="row row-center" id="div-list-rcbp">
+                <div class="col col-40" style="text-align:center;">
+                    <label>Warehouse</label>
+                </div>
+                <div class="col col-60">
+                    <ui-select ng-model="Whwh1.selected" theme="bootstrap" reset-search-input="true">
+                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.WarehouseName | limitTo:16}}</ui-select-match>
+                        <ui-select-choices repeat="Whwh1 in Whwh1s track by $index" refresh="refreshWhwh1($select.search)" refresh-delay="0" position="down">
+                            <div ng-bind-html="Whwh1.WarehouseName | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+            <div class="row row-center" id="div-list-grn">
+                <div class="col col-40" style="text-align:center;">
+                    <label>Store No</label>
+                </div>
+                <div class="col col-60">
+                    <ui-select theme="bootstrap" ng-model="Whwh2.selected" reset-search-input="true" on-select="showImpmwh(null,Whwh2.selected.StoreNo)">
+                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.StoreNo}}</ui-select-match>
+                        <ui-select-choices repeat="Whwh2 in Whwh2s track by $index" refresh="refreshWhwh2($select.search)" refresh-delay="0" position="down">
+                            <div ng-bind-html="Whwh2.StoreNo | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
             <hr style="margin-top:-0.3em;">
         </div>
     </ion-pane>
-    <ion-content style="margin-top:100px;">
+    <ion-content style="margin-top:160px;">
         <ion-list id="div-list">
             <div class="card" ng-repeat="Impm1 in Impm1sEnquiry">
                 <div class="item item-input">

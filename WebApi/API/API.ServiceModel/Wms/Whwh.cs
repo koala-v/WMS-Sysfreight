@@ -30,7 +30,13 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
-                    strSQL = "Select * From Whwh1 Where WarehouseName LIKE '" + request.WarehouseName + "%'";
+                    if (request.WarehouseName != null && request.WarehouseName != "")
+                    { strSQL = "Select * From Whwh1 Where WarehouseName LIKE '" + request.WarehouseName + "%'"; }
+                    else
+                    {
+                        strSQL = "Select * From Whwh1 Where WarehouseCode =(Select Top 1 DefaultWarehouseCode from impa1)";
+                    }
+                        
                     Result = db.Select<Whwh1>(strSQL);
                 }
             }

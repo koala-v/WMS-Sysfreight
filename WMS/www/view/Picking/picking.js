@@ -358,6 +358,7 @@ appControllers.controller( 'PickingDetailCtrl', [
                 if ( is.equal( type, 'StoreNo' ) ) {
                     $cordovaBarcodeScanner.scan().then( function ( imageData ) {
                         $scope.Detail.Scan.StoreNo = imageData.text;
+                        $( '#txt-barcode' ).focus();    
                     }, function ( error ) {
                         $cordovaToast.showShortBottom( error );
                     } );
