@@ -28,7 +28,7 @@ appConfig.constant('ENV', {
     updateFile:   'update.json',
     rootPath:     'WMS',
     configFile:   'config.txt',
-    version:      '1.0.4',
+    version:      '1.0.5',
     parameter: {
         showSerialNo : false
     },
