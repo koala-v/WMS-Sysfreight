@@ -10,7 +10,7 @@
                     <label>Customer</label>
                 </div>
                 <div class="col col-67">
-                    <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="showImgr1(Rcbp1.selected.BusinessPartyCode)">
+                    <ui-select   ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true"  ng-change="Change(Rcbp1.selected.BusinessPartyCode)" on-select="showImgr1(Rcbp1.selected.BusinessPartyCode)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
                         <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
                             <div ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"></div>
@@ -23,14 +23,15 @@
                     <label>GRN No</label>
                 </div>
                 <div class="col col-67">
-                    <ui-select theme="bootstrap" ng-model="GrnNo.selected" reset-search-input="true" on-select="showImgr2(true, GrnNo.selected.GoodsReceiptNoteNo)">
-                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.GoodsReceiptNoteNo}}</ui-select-match>
-                        <ui-select-choices repeat="GrnNo in GrnNos track by $index" refresh="refreshGrnNos($select.search)" refresh-delay="0" position="down">
+                    <ui-select theme="bootstrap"   ng-model="GrnNo.selected" reset-search-input="true" on-select="showImgr2(true, GrnNo.selected.GoodsReceiptNoteNo)">
+                        <ui-select-match allow-clear="true" id="iGrNNo1" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.GoodsReceiptNoteNo}}</ui-select-match>
+                        <ui-select-choices repeat="GrnNo in GrnNos track by $index"  id="iGrNNo2" refresh="refreshGrnNos($select.search)" refresh-delay="0" position="down">
                             <div ng-bind-html="GrnNo.GoodsReceiptNoteNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
             </div>
+            <input type="text" id="iGrNNo" style="padding-right: 14px;">
             <hr style="margin-top:-0.3em;">
         </div>
     </ion-pane>
@@ -81,7 +82,7 @@
                         </label>
                     </div>
                     <div class="col col-10">
-                        <button class="button button-clear button-small" ng-click="openCam(Imgr2)"><i class="icon ion-qr-scanner"></i></button>
+                        <button class="button button-clear   button-small" ng-click="openCam(Imgr2)"><i class="icon ion-qr-scanner"></i></button>
                     </div>
                     <div class="col">
                         <button class="button button-clear button-small" ng-click="clearInput(Imgr2)"><i class="icon ion-android-close"></i></button>

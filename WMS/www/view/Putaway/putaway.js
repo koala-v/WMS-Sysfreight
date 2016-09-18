@@ -55,6 +55,17 @@ appControllers.controller( 'PutawayListCtrl', [
                 $scope.Imgr2s = [];
             }
         };
+
+        $scope.Change = function (ChangeValue) {
+          if (ChangeValue!==''){
+            console.log(ChangeValue);
+            console.log('11');
+              $( '#iGrNNo' ).focus();
+
+          }else{
+            console.log('dd');
+          }
+        };
         $scope.refreshGrnNos = function ( Grn ) {
             if ( is.not.undefined( Grn ) && is.not.empty( Grn ) ) {
                 var objUri = ApiService.Uri( true, '/api/wms/imgr1' );
