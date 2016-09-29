@@ -85,16 +85,17 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
-                    string strSql = "Select Impm1.TrxNo, Impm1.BatchLineItemNo, IsNull(BatchNo,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
+                    string strSql = "Select Impm1.TrxNo, Impm1.BatchLineItemNo, IsNull(ProductCode,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
                                     "IsNull(ProductName,'') AS ProductName, IsNull(GoodsReceiveorIssueNo,'') AS GoodsReceiveorIssueNo, IsNull(UserDefine1,'') AS UserDefine1," +
                                     "b.QtyBal, '' AS FromToStoreNo, 0 AS ScanQty " +
                                     "From Impm1 Join (Select (Select top 1 Imit1.StatusCode from imit1 Where imit1.GoodsTransferNoteNo = a.GoodsReceiveorIssueNo) AS ImitStatus, a.TrxNo, " +
                                     "(CASE a.DimensionFlag When '1' THEN a.BalancePackingQty When '2' THEN a.BalanceWholeQty ELSE a.BalanceLooseQty END) AS QtyBal From Impm1 a ) b on b.TrxNo = impm1.TrxNo " +
-                                    "Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0";
+                                    "Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0  ";
                     if (request.CustomerCode != null && request.CustomerCode != "")
                     {
                         strSql = strSql + " AND CustomerCode = " + Modfunction.SQLSafeValue(request.CustomerCode);
                     }
+                    strSql = strSql + " order by impm1.ProductCode " ;
                     Results = db.Select<Impm1_Transfer>(strSql);
                     for (int i = 0; i < Results.Count; i++)
                     {
