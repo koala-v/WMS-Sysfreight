@@ -52,72 +52,37 @@ appControllers.controller('GtListCtrl', [
                 });
             }
         };
-        $scope.showWarehouse = function (CustomerCode) {
-            if (is.not.undefined(CustomerCode) && is.not.empty(CustomerCode)) {
-                if (is.undefined($scope.Whwh1.selected) || is.empty($scope.Whwh1.selected)) {
-                    var objUri1 = ApiService.Uri(true, '/api/wms/whwh1');
-                    ApiService.Get(objUri1, false).then(function success(result) {
-                        $scope.Whwh1s = result.data.results;
-                        $scope.Whwh1.selected = $scope.Whwh1s[0];
-                    });
-                }
-            }
-        }
-
+        $scope.showWarehouse = function () {
+          if (is.undefined($scope.Whwh1.selected) || is.empty($scope.Whwh1.selected)) {
+              var objUri1 = ApiService.Uri(true, '/api/wms/whwh1');
+              ApiService.Get(objUri1, false).then(function success(result) {
+                  $scope.Whwh1s = result.data.results;
+                  $scope.Whwh1.selected = $scope.Whwh1s[0];
+              });
+          }
+        };
         $scope.showImpm1 = function (CustomerCode, StoreNo) {
-            if (is.not.undefined(CustomerCode) && is.not.empty(CustomerCode)) {
-                $scope.showWarehouse(CustomerCode);
-                var objUri = ApiService.Uri(true, '/api/wms/impm1/transfer');
-                objUri.addSearch('CustomerCode', CustomerCode);
-                if (is.not.undefined($scope.Whwh1.selected)) {
-                    if (is.not.undefined($scope.Whwh1.selected.WarehouseCode) && is.not.empty($scope.Whwh1.selected.WarehouseCode)) {
-                        objUri.addSearch('WarehouseCode', $scope.Whwh1.selected.WarehouseCode);
-                    }
-                }
-                if (is.not.undefined($scope.Whwh2.selected)) {
-                    if (is.not.undefined($scope.Whwh2.selected.StoreNo) && is.not.empty($scope.Whwh2.selected.StoreNo)) {
-                        objUri.addSearch('StoreNo', $scope.Whwh2.selected.StoreNo);
-                    }
-                }
-                if (is.not.undefined($scope.Rcbp1.selected)) {
-                    if (is.not.undefined($scope.Rcbp1.selected.CustomerCode) && is.not.empty($scope.Rcbp1.selected.CustomerCode)) {
-
-                    }
-                }
-                ApiService.Get(objUri, true).then(function success(result) {
-                    $scope.Impm1s = result.data.results;
-                });
-            } else if (is.not.undefined(StoreNo) && is.not.empty(StoreNo)) {
-                var objUri = ApiService.Uri(true, '/api/wms/impm1/transfer');
-                if (is.not.undefined($scope.Whwh1.selected.WarehouseCode) && is.not.empty($scope.Whwh1.selected.WarehouseCode)) {
-                    objUri.addSearch('WarehouseCode', $scope.Whwh1.selected.WarehouseCode);
-                }
-                objUri.addSearch('StoreNo', StoreNo);
-                if (is.not.undefined($scope.Rcbp1.selected.CustomerCode) && is.not.empty($scope.Rcbp1.selected.CustomerCode)) {
-                    objUri.addSearch('CustomerCode', $scope.Rcbp1.selected.CustomerCode);
-                }
-                ApiService.Get(objUri, true).then(function success(result) {
-                    $scope.Impm1s = result.data.results;
-                });
-            } else if ((is.not.undefined($scope.Rcbp1.selected.CustomerCode) && is.not.empty($scope.Rcbp1.selected.CustomerCode)) || ((is.not.undefined($scope.Whwh1.selected.WarehouseCode) && is.not.empty($scope.Whwh1.selected.WarehouseCode)) && (is.not.undefined($scope.Whwh2.selected.StoreNo) && is.not.empty($scope.Whwh2.selected.StoreNo)))) {
-                var objUri = ApiService.Uri(true, '/api/wms/impm1/transfer');
-                objUri.addSearch('CustomerCode', CustomerCode);
-                if (is.not.undefined($scope.Whwh1.selected.WarehouseCode) && is.not.empty($scope.Whwh1.selected.WarehouseCode)) {
-                    objUri.addSearch('WarehouseCode', $scope.Whwh1.selected.WarehouseCode);
-                }
-                if (is.not.undefined($scope.Whwh2.selected.StoreNo) && is.not.empty($scope.Whwh2.selected.StoreNo)) {
-                    objUri.addSearch('StoreNo', $scope.Whwh2.selected.StoreNo);
-                }
-                if (is.not.undefined($scope.Rcbp1.selected.CustomerCode) && is.not.empty($scope.Rcbp1.selected.CustomerCode)) {
-                    objUri.addSearch('CustomerCode', $scope.Rcbp1.selected.CustomerCode);
-                }
-                ApiService.Get(objUri, true).then(function success(result) {
-                    $scope.Impm1s = result.data.results;
-                });
-
-            } else {
-                $scope.clearImpm1s();
+          if(is.not.undefined($scope.Rcbp1.selected) || is.not.undefined($scope.Whwh1.selected))
+          {
+            var objUri = ApiService.Uri(true, '/api/wms/impm1/transfer');
+            if ( is.not.undefined($scope.Whwh1.selected))
+            {
+              if (is.not.undefined($scope.Whwh1.selected.WarehouseCode) && is.not.empty($scope.Whwh1.selected.WarehouseCode)) {
+                  objUri.addSearch('WarehouseCode', $scope.Whwh1.selected.WarehouseCode);
+              }
+              if (is.not.undefined($scope.Whwh2.selected) && is.not.undefined($scope.Whwh2.selected.StoreNo) && is.not.empty($scope.Whwh2.selected.StoreNo)) {
+                  objUri.addSearch('StoreNo', $scope.Whwh2.selected.StoreNo);
+              }
             }
+            if ( is.not.undefined($scope.Rcbp1.selected) && is.not.undefined($scope.Rcbp1.selected.BusinessPartyCode) && is.not.empty($scope.Rcbp1.selected.BusinessPartyCode)) {
+              objUri.addSearch('CustomerCode', $scope.Rcbp1.selected.BusinessPartyCode);
+            }
+            ApiService.Get(objUri, true).then(function success(result) {
+                $scope.Impm1s = result.data.results;
+            });
+          }else{
+             $scope.clearImpm1s();
+         }
         };
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
@@ -130,6 +95,7 @@ appControllers.controller('GtListCtrl', [
         $scope.clearImpm1s = function () {
             $scope.Impm1s = {};
         };
+        $scope.showWarehouse();
         /*
         $scope.openCam = function ( impm1 ) {
             if(!ENV.fromWeb){
