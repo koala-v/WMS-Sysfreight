@@ -22,6 +22,10 @@ namespace WebApi.ServiceModel.Wms
         public string LineItemNo { get; set; }
         public string NewStoreNo { get; set; }
         public string Qty { get; set; }
+        public string QtyList { get; set; }
+        public string NewStoreNoList { get; set; }
+        public string LineItemNoList { get; set; }
+        public string Impm1TrxNoList { get; set; }
     }
     public class Imit_Logic
     {
@@ -63,6 +67,17 @@ namespace WebApi.ServiceModel.Wms
         public int Confirm_Imit1(Imit request)
         {
             int Result = -1;
+            if (request.NewStoreNoList != null || request.NewStoreNoList != "")
+            {
+                string[] NewSotreNoDetail = request.NewStoreNoList.Split(',');
+                string[] LineItemNoDetail = request.LineItemNoList.Split(',');
+                string[] Impm1TrxNoDetail = request.Impm1TrxNoList.Split(',');
+                string[] QtyDetail = request.QtyList.Split(',');
+                for (int intI = 0; intI < NewSotreNoDetail.Length; intI++)
+                {
+                    Result = Insert_Imit2Detail(int.Parse(Impm1TrxNoDetail[intI]), int.Parse(request.TrxNo), int.Parse(LineItemNoDetail[intI]), int.Parse(QtyDetail[intI]), NewSotreNoDetail[intI], request.UpdateBy);
+                }
+            }
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
@@ -77,13 +92,20 @@ namespace WebApi.ServiceModel.Wms
         public int Insert_Imit2(Imit request)
         {
             int Result = -1;
+            Result = Insert_Imit2Detail(int.Parse(request.Impm1TrxNo), int.Parse(request.TrxNo), int.Parse(request.LineItemNo), int.Parse(request.Qty), request.NewStoreNo, request.UpdateBy);
+            return Result;
+        }
+
+        public int Insert_Imit2Detail(int Impm1TrxNoNew, int TrxNoNew, int LineItemNoNew, int QtyNew, string NewStoreNoNew, string UpdateByNew)
+        {
+            int Result = -1;
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
                     string strSql = "Select Impm1.*,Impr1.PackingPackageSize,Impr1.WholePackageSize " +
                                 "From Impm1 Join Impr1 On Impm1.ProductTrxNo = Impr1.TrxNo " +
-                                "Where Impm1.TrxNo=" + int.Parse(request.Impm1TrxNo);
+                                "Where Impm1.TrxNo=" + Impm1TrxNoNew;
                     List<Impm1> impm1s = db.Select<Impm1>(strSql);
                     if (impm1s.Count > 0)
                     {
@@ -93,71 +115,71 @@ namespace WebApi.ServiceModel.Wms
                                 db.Insert(
                                                 new Imit2
                                                 {
-                                                    TrxNo = int.Parse(request.TrxNo),
-                                                    LineItemNo = int.Parse(request.LineItemNo),
-                                                    MovementTrxNo = int.Parse(request.Impm1TrxNo),
-                                                    NewStoreNo = request.NewStoreNo,
+                                                    TrxNo = TrxNoNew,
+                                                    LineItemNo = LineItemNoNew,
+                                                    MovementTrxNo = Impm1TrxNoNew,
+                                                    NewStoreNo = NewStoreNoNew,
                                                     NewWarehouseCode = impm1s[0].WarehouseCode,
                                                     StoreNo = impm1s[0].StoreNo,
                                                     WarehouseCode = impm1s[0].WarehouseCode,
                                                     ProductTrxNo = impm1s[0].ProductTrxNo,
-                                                    PackingQty = int.Parse(request.Qty),
-                                                    WholeQty = int.Parse(request.Qty) * impm1s[0].PackingPackageSize,
-                                                    LooseQty = int.Parse(request.Qty) * impm1s[0].PackingPackageSize * impm1s[0].WholePackageSize,
-                                                    Volume = int.Parse(request.Qty) * impm1s[0].UnitVol,
-                                                    Weight = int.Parse(request.Qty) * impm1s[0].UnitWt,
-                                                    SpaceArea = impm1s[0].SpaceArea * int.Parse(request.Qty) / impm1s[0].BalancePackingQty,
-                                                    UpdateBy = request.UpdateBy
+                                                    PackingQty = QtyNew,
+                                                    WholeQty = QtyNew * impm1s[0].PackingPackageSize,
+                                                    LooseQty = QtyNew * impm1s[0].PackingPackageSize * impm1s[0].WholePackageSize,
+                                                    Volume = QtyNew * impm1s[0].UnitVol,
+                                                    Weight = QtyNew * impm1s[0].UnitWt,
+                                                    SpaceArea = impm1s[0].SpaceArea * QtyNew / impm1s[0].BalancePackingQty,
+                                                    UpdateBy = UpdateByNew
                                                 }
                                 );
-                                db.SqlScalar<int>("Update Impm1 set BalancePackingQty= BalancePackingQty - " + request.Qty.ToString() + ", BalanceWholeQty=BalanceWholeQty-" + (int.Parse(request.Qty) * impm1s[0].PackingPackageSize) + ", BalanceLooseQty=BalanceLooseQty-" + (int.Parse(request.Qty) * impm1s[0].PackingPackageSize * impm1s[0].WholePackageSize) + ", BalanceVolume = BalanceVolume - " + (int.Parse(request.Qty) * impm1s[0].UnitVol) + ", BalanceWeight = BalanceWeight - " + (int.Parse(request.Qty) * impm1s[0].UnitWt) + ", BalanceSpaceArea = BalanceSpaceArea - " + (impm1s[0].SpaceArea * int.Parse(request.Qty) / impm1s[0].BalancePackingQty) + ",UpdateDateTime=getdate(),UpdateBy='" + request.UpdateBy + "' Where TrxNo = " + int.Parse(request.Impm1TrxNo));
-                                db.SqlScalar<int>("EXEC spi_Imit2_Impm " + int.Parse(request.TrxNo) + "," + int.Parse(request.LineItemNo) + ",'" + request.UpdateBy + "'");
+                                db.SqlScalar<int>("Update Impm1 set BalancePackingQty= BalancePackingQty - " + QtyNew.ToString() + ", BalanceWholeQty=BalanceWholeQty-" + (QtyNew * impm1s[0].PackingPackageSize) + ", BalanceLooseQty=BalanceLooseQty-" + (QtyNew * impm1s[0].PackingPackageSize * impm1s[0].WholePackageSize) + ", BalanceVolume = BalanceVolume - " + (QtyNew * impm1s[0].UnitVol) + ", BalanceWeight = BalanceWeight - " + (QtyNew * impm1s[0].UnitWt) + ", BalanceSpaceArea = BalanceSpaceArea - " + (impm1s[0].SpaceArea * QtyNew / impm1s[0].BalancePackingQty) + ",UpdateDateTime=getdate(),UpdateBy='" + UpdateByNew + "' Where TrxNo = " + Impm1TrxNoNew.ToString());
+                                db.SqlScalar<int>("EXEC spi_Imit2_Impm " + TrxNoNew + "," + LineItemNoNew + ",'" + UpdateByNew + "'");
                                 break;
                             case "2":
                                 db.Insert(
                                                 new Imit2
                                                 {
-                                                    TrxNo = int.Parse(request.TrxNo),
-                                                    LineItemNo = int.Parse(request.LineItemNo),
-                                                    NewStoreNo = request.NewStoreNo,
-                                                    UpdateBy = request.UpdateBy,
-                                                    MovementTrxNo = int.Parse(request.Impm1TrxNo),
+                                                    TrxNo = TrxNoNew,
+                                                    LineItemNo = LineItemNoNew,
+                                                    NewStoreNo = NewStoreNoNew,
+                                                    UpdateBy = UpdateByNew,
+                                                    MovementTrxNo = Impm1TrxNoNew,
                                                     NewWarehouseCode = impm1s[0].WarehouseCode,
                                                     StoreNo = impm1s[0].StoreNo,
                                                     WarehouseCode = impm1s[0].WarehouseCode,
                                                     ProductTrxNo = impm1s[0].ProductTrxNo,
-                                                    WholeQty = int.Parse(request.Qty),
-                                                    LooseQty = int.Parse(request.Qty) * impm1s[0].WholePackageSize,
-                                                    Volume = int.Parse(request.Qty) * impm1s[0].UnitVol,
-                                                    Weight = int.Parse(request.Qty) * impm1s[0].UnitWt,
-                                                    SpaceArea = impm1s[0].SpaceArea * int.Parse(request.Qty) / impm1s[0].BalanceWholeQty,
+                                                    WholeQty = QtyNew,
+                                                    LooseQty = QtyNew * impm1s[0].WholePackageSize,
+                                                    Volume = QtyNew * impm1s[0].UnitVol,
+                                                    Weight = QtyNew * impm1s[0].UnitWt,
+                                                    SpaceArea = impm1s[0].SpaceArea * QtyNew / impm1s[0].BalanceWholeQty,
 
                                                 }
                                 );
-                                db.SqlScalar<int>("Update Impm1 set BalanceWholeQty=BalanceWholeQty-" + int.Parse(request.Qty) + ", BalanceLooseQty=BalanceLooseQty-" + (int.Parse(request.Qty) * impm1s[0].WholePackageSize) + ", BalanceVolume = BalanceVolume - " + (int.Parse(request.Qty) * impm1s[0].UnitVol) + ", BalanceWeight = BalanceWeight - " + (int.Parse(request.Qty) * impm1s[0].UnitWt) + ", BalanceSpaceArea = BalanceSpaceArea - " + (impm1s[0].SpaceArea * int.Parse(request.Qty) / impm1s[0].BalanceWholeQty) + ",UpdateDateTime=getdate(),UpdateBy='" + request.UpdateBy + "' Where TrxNo = " + int.Parse(request.Impm1TrxNo));
-                                db.SqlScalar<int>("EXEC spi_Imit2_Impm " + int.Parse(request.TrxNo) + "," + int.Parse(request.LineItemNo) + ",'" + request.UpdateBy + "'");
+                                db.SqlScalar<int>("Update Impm1 set BalanceWholeQty=BalanceWholeQty-" + QtyNew + ", BalanceLooseQty=BalanceLooseQty-" + (QtyNew * impm1s[0].WholePackageSize) + ", BalanceVolume = BalanceVolume - " + (QtyNew * impm1s[0].UnitVol) + ", BalanceWeight = BalanceWeight - " + (QtyNew * impm1s[0].UnitWt) + ", BalanceSpaceArea = BalanceSpaceArea - " + (impm1s[0].SpaceArea * QtyNew / impm1s[0].BalanceWholeQty) + ",UpdateDateTime=getdate(),UpdateBy='" + UpdateByNew + "' Where TrxNo = " + Impm1TrxNoNew);
+                                db.SqlScalar<int>("EXEC spi_Imit2_Impm " + TrxNoNew + "," + LineItemNoNew + ",'" + UpdateByNew + "'");
                                 break;
                             default:
                                 db.Insert(
                                                 new Imit2
                                                 {
-                                                    TrxNo = int.Parse(request.TrxNo),
-                                                    LineItemNo = int.Parse(request.LineItemNo),
-                                                    NewStoreNo = request.NewStoreNo,
-                                                    UpdateBy = request.UpdateBy,
-                                                    MovementTrxNo = int.Parse(request.Impm1TrxNo),
+                                                    TrxNo = TrxNoNew,
+                                                    LineItemNo = LineItemNoNew,
+                                                    NewStoreNo = NewStoreNoNew,
+                                                    UpdateBy = UpdateByNew,
+                                                    MovementTrxNo = Impm1TrxNoNew,
                                                     NewWarehouseCode = impm1s[0].WarehouseCode,
                                                     StoreNo = impm1s[0].StoreNo,
                                                     WarehouseCode = impm1s[0].WarehouseCode,
                                                     ProductTrxNo = impm1s[0].ProductTrxNo,
-                                                    LooseQty = int.Parse(request.Qty),
-                                                    Volume = int.Parse(request.Qty) * impm1s[0].UnitVol,
-                                                    Weight = int.Parse(request.Qty) * impm1s[0].UnitWt,
-                                                    SpaceArea = impm1s[0].SpaceArea * int.Parse(request.Qty) / impm1s[0].BalanceLooseQty,
+                                                    LooseQty = QtyNew,
+                                                    Volume = QtyNew * impm1s[0].UnitVol,
+                                                    Weight = QtyNew * impm1s[0].UnitWt,
+                                                    SpaceArea = impm1s[0].SpaceArea * QtyNew / impm1s[0].BalanceLooseQty,
                                                 }
                                 );
-                                db.SqlScalar<int>("Update Impm1 set BalanceLooseQty=BalanceLooseQty-" + int.Parse(request.Qty) + ", BalanceVolume = BalanceVolume - " + (int.Parse(request.Qty) * impm1s[0].UnitVol) + ", BalanceWeight = BalanceWeight - " + (int.Parse(request.Qty) * impm1s[0].UnitWt) + ", BalanceSpaceArea = BalanceSpaceArea - " + (impm1s[0].SpaceArea * int.Parse(request.Qty) / impm1s[0].BalanceLooseQty) + ",UpdateDateTime=getdate(),UpdateBy='" + request.UpdateBy + "' Where TrxNo = " + int.Parse(request.Impm1TrxNo));
-                                db.SqlScalar<int>("EXEC spi_Imit2_Impm " + int.Parse(request.TrxNo) + "," + int.Parse(request.LineItemNo) + ",'" + request.UpdateBy + "'");
+                                db.SqlScalar<int>("Update Impm1 set BalanceLooseQty=BalanceLooseQty-" + QtyNew + ", BalanceVolume = BalanceVolume - " + (QtyNew * impm1s[0].UnitVol) + ", BalanceWeight = BalanceWeight - " + (QtyNew * impm1s[0].UnitWt) + ", BalanceSpaceArea = BalanceSpaceArea - " + (impm1s[0].SpaceArea * QtyNew / impm1s[0].BalanceLooseQty) + ",UpdateDateTime=getdate(),UpdateBy='" + UpdateByNew + "' Where TrxNo = " + Impm1TrxNoNew);
+                                db.SqlScalar<int>("EXEC spi_Imit2_Impm " + TrxNoNew + "," + LineItemNoNew + ",'" + UpdateByNew + "'");
                                 break;
                         }
                         Result = 1;

@@ -53,36 +53,34 @@ appControllers.controller('GtListCtrl', [
             }
         };
         $scope.showWarehouse = function () {
-          if (is.undefined($scope.Whwh1.selected) || is.empty($scope.Whwh1.selected)) {
-              var objUri1 = ApiService.Uri(true, '/api/wms/whwh1');
-              ApiService.Get(objUri1, false).then(function success(result) {
-                  $scope.Whwh1s = result.data.results;
-                  $scope.Whwh1.selected = $scope.Whwh1s[0];
-              });
-          }
+            if (is.undefined($scope.Whwh1.selected) || is.empty($scope.Whwh1.selected)) {
+                var objUri1 = ApiService.Uri(true, '/api/wms/whwh1');
+                ApiService.Get(objUri1, false).then(function success(result) {
+                    $scope.Whwh1s = result.data.results;
+                    $scope.Whwh1.selected = $scope.Whwh1s[0];
+                });
+            }
         };
         $scope.showImpm1 = function (CustomerCode, StoreNo) {
-          if(is.not.undefined($scope.Rcbp1.selected) || is.not.undefined($scope.Whwh1.selected))
-          {
-            var objUri = ApiService.Uri(true, '/api/wms/impm1/transfer');
-            if ( is.not.undefined($scope.Whwh1.selected))
-            {
-              if (is.not.undefined($scope.Whwh1.selected.WarehouseCode) && is.not.empty($scope.Whwh1.selected.WarehouseCode)) {
-                  objUri.addSearch('WarehouseCode', $scope.Whwh1.selected.WarehouseCode);
-              }
-              if (is.not.undefined($scope.Whwh2.selected) && is.not.undefined($scope.Whwh2.selected.StoreNo) && is.not.empty($scope.Whwh2.selected.StoreNo)) {
-                  objUri.addSearch('StoreNo', $scope.Whwh2.selected.StoreNo);
-              }
+            if (is.not.undefined($scope.Rcbp1.selected) || is.not.undefined($scope.Whwh1.selected)) {
+                var objUri = ApiService.Uri(true, '/api/wms/impm1/transfer');
+                if (is.not.undefined($scope.Whwh1.selected)) {
+                    if (is.not.undefined($scope.Whwh1.selected.WarehouseCode) && is.not.empty($scope.Whwh1.selected.WarehouseCode)) {
+                        objUri.addSearch('WarehouseCode', $scope.Whwh1.selected.WarehouseCode);
+                    }
+                    if (is.not.undefined($scope.Whwh2.selected) && is.not.undefined($scope.Whwh2.selected.StoreNo) && is.not.empty($scope.Whwh2.selected.StoreNo)) {
+                        objUri.addSearch('StoreNo', $scope.Whwh2.selected.StoreNo);
+                    }
+                }
+                if (is.not.undefined($scope.Rcbp1.selected) && is.not.undefined($scope.Rcbp1.selected.BusinessPartyCode) && is.not.empty($scope.Rcbp1.selected.BusinessPartyCode)) {
+                    objUri.addSearch('CustomerCode', $scope.Rcbp1.selected.BusinessPartyCode);
+                }
+                ApiService.Get(objUri, true).then(function success(result) {
+                    $scope.Impm1s = result.data.results;
+                });
+            } else {
+                $scope.clearImpm1s();
             }
-            if ( is.not.undefined($scope.Rcbp1.selected) && is.not.undefined($scope.Rcbp1.selected.BusinessPartyCode) && is.not.empty($scope.Rcbp1.selected.BusinessPartyCode)) {
-              objUri.addSearch('CustomerCode', $scope.Rcbp1.selected.BusinessPartyCode);
-            }
-            ApiService.Get(objUri, true).then(function success(result) {
-                $scope.Impm1s = result.data.results;
-            });
-          }else{
-             $scope.clearImpm1s();
-         }
         };
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
@@ -150,6 +148,10 @@ appControllers.controller('GtListCtrl', [
                             var LineItemNo = 0,
                                 i = 0,
                                 count = 0;
+                            var QtyList = '';
+                            var ImpmTrxNoList = '';
+                            var NewStoreNoList = '';
+                            var LineItemNoList = '';
                             for (i = 0; i < len; i++) {
                                 var impm1 = {
                                     TrxNo: impm1s.tree[i].TrxNo,
@@ -159,26 +161,31 @@ appControllers.controller('GtListCtrl', [
                                 };
                                 if (impm1.Qty > 0 && is.not.empty(impm1.FromToStoreNo)) {
                                     LineItemNo = LineItemNo + 1;
-                                    var objUri = ApiService.Uri(true, '/api/wms/imit2/create');
+                                    if (ImpmTrxNoList === '') {
+                                        QtyList = impm1.Qty;
+                                        ImpmTrxNoList = impm1.TrxNo;
+                                        NewStoreNoList = impm1.FromToStoreNo;
+                                        LineItemNoList = LineItemNo;
+                                    } else {
+                                        QtyList = QtyList + ',' + impm1.Qty;
+                                        ImpmTrxNoList = ImpmTrxNoList + ',' + impm1.TrxNo;
+                                        NewStoreNoList = NewStoreNoList + ',' + impm1.FromToStoreNo;
+                                        LineItemNoList = LineItemNoList + ',' + LineItemNo;
+                                    }
+                                }
+                                if (ImpmTrxNoList != '') {
+                                    var objUri = ApiService.Uri(true, '/api/wms/imit1/confirm');
                                     objUri.addSearch('TrxNo', imit1.TrxNo);
-                                    objUri.addSearch('LineItemNo', LineItemNo);
-                                    objUri.addSearch('Impm1TrxNo', impm1.TrxNo);
-                                    objUri.addSearch('NewStoreNo', impm1.FromToStoreNo);
-                                    objUri.addSearch('Qty', impm1.Qty);
                                     objUri.addSearch('UpdateBy', sessionStorage.getItem('UserId').toString());
+                                    objUri.addSearch('NewStoreNoList', NewStoreNoList);
+                                    objUri.addSearch('LineItemNoList', LineItemNoList);
+                                    objUri.addSearch('Impm1TrxNoList', ImpmTrxNoList);
+                                    objUri.addSearch('QtyList', QtyList);
                                     ApiService.Get(objUri, false).then(function success(result) {
-                                        count = count + 1;
-                                        if (is.equal(count, LineItemNo)) {
-                                            var objUri = ApiService.Uri(true, '/api/wms/imit1/confirm');
-                                            objUri.addSearch('TrxNo', imit1.TrxNo);
-                                            objUri.addSearch('UpdateBy', sessionStorage.getItem('UserId').toString());
-                                            ApiService.Get(objUri, false).then(function success(result) {
-                                                PopupService.Info(popup, 'Comfirm Success').then(function () {
-                                                    $scope.clearImpm1s();
-                                                    $scope.returnMain();
-                                                });
-                                            });
-                                        }
+                                        PopupService.Info(popup, 'Comfirm Success').then(function () {
+                                            $scope.clearImpm1s();
+                                            $scope.returnMain();
+                                        });
                                     });
                                 }
                             }

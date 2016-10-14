@@ -104,7 +104,7 @@ namespace WebApi.ServiceInterface
 												catch (Exception ex) { cr(ecr, ex); }
 												return ecr;
 								}
-								public ServiceModel.Wms.Rcbp_Logic wms_Rcbp_Logic { get; set; }
+								public ServiceModel.Wms.WMSRcbp_Logic wms_Rcbp_Logic { get; set; }
 								public object Any(ServiceModel.Wms.Rcbp request)
 								{
 												CommonResponse ecr = new CommonResponse();
@@ -345,19 +345,19 @@ namespace WebApi.ServiceInterface
 												catch (Exception ex) { cr(ecr, ex); }
 												return ecr;
 								}
-        public ServiceModel.Freight.Rcbp_Logic rcbp_Logic { get; set; }
-        public object Any(ServiceModel.Freight.Rcbp request)
-        {
-            CommonResponse ecr = new CommonResponse();
-            ecr.initial();
-            try
-            {
-                ServiceInterface.Freight.TableService ls = new ServiceInterface.Freight.TableService();
-                ls.TS_Rcbp(auth, request, rcbp_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
-            }
-            catch (Exception ex) { cr(ecr, ex); }
-            return ecr;
-        }
+        //public ServiceModel.Freight.Rcbp_Logic rcbp_Logic { get; set; }
+        //public object Any(ServiceModel.Freight.Rcbp request)
+        //{
+        //    CommonResponse ecr = new CommonResponse();
+        //    ecr.initial();
+        //    try
+        //    {
+        //        ServiceInterface.Freight.TableService ls = new ServiceInterface.Freight.TableService();
+        //        ls.TS_Rcbp(auth, request, rcbp_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
+        //    }
+        //    catch (Exception ex) { cr(ecr, ex); }
+        //    return ecr;
+        //}
         public ServiceModel.Freight.Rcvy_Logic list_Rcvy1_Logic { get; set; }
         public object Get(ServiceModel.Freight.Rcvy request)
         {
