@@ -69,7 +69,7 @@ appControllers.controller( 'IndexCtrl', [
             } else {
                 PopupService.Info(popup, 'No Updates!').then();
             }
-        }
+        };
         $rootScope.$on( 'logout', function() {
             $scope.Status.Login = false;
             $ionicSideMenuDelegate.toggleLeft();
@@ -174,10 +174,10 @@ appControllers.controller( 'LoginCtrl', [
         $timeout,
         ApiService ) {
         $scope.logininfo = {};
-        if ( undefined == $scope.logininfo.strUserName ) {
+        if ( undefined === $scope.logininfo.strUserName ) {
             $scope.logininfo.strUserName = '';
         }
-        if ( undefined == $scope.logininfo.strPassword ) {
+        if ( undefined === $scope.logininfo.strPassword ) {
             $scope.logininfo.strPassword = '';
         }
         $( '#iUserName' ).on( 'keydown', function( e ) {
@@ -190,11 +190,14 @@ appControllers.controller( 'LoginCtrl', [
                 $scope.login();
             }
         } );
+        $rootScope.$on( 'logout', function() {
+          $scope.logininfo.strPassword='';
+        } );
         $scope.login = function() {
             if ( window.cordova && window.cordova.plugins.Keyboard ) {
                 cordova.plugins.Keyboard.close();
             }
-            if ( $scope.logininfo.strUserName == '' ) {
+            if ( $scope.logininfo.strUserName === '' ) {
                 var popup = $ionicPopup.alert( {
                     title: 'Please Enter User Name.',
                     okType: 'button-assertive'

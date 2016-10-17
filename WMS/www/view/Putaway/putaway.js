@@ -38,7 +38,7 @@ appControllers.controller( 'PutawayListCtrl', [
                 ApiService.Get( objUri, false ).then( function success( result ) {} );
             }
             $ionicLoading.hide();
-            PopupService.Info( popup, 'Comfirm Success' ).then( function () {
+            PopupService.Info( popup, 'Confirm Success' ).then( function () {
                 $scope.clearImgr();
                 $scope.returnMain();
             } );

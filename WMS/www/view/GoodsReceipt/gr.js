@@ -5,13 +5,15 @@ appControllers.controller('GrListCtrl', [
     '$state',
     '$cordovaKeyboard',
     'ApiService',
+    'SqlService',
     function (
         ENV,
         $scope,
         $stateParams,
         $state,
         $cordovaKeyboard,
-        ApiService) {
+        ApiService,
+        SqlService) {
         $scope.Rcbp1 = {};
         $scope.GrnNo = {};
         $scope.Imgr1s = {};
@@ -51,7 +53,7 @@ appControllers.controller('GrListCtrl', [
             return moment(utc).format('DD-MMM-YYYY');
         };
         $scope.GoToDetail = function (Imgr1) {
-            if (Imgr1 != null) {
+            if (Imgr1 !== null) {
                 $state.go('grDetail', {
                     'CustomerCode': Imgr1.CustomerCode,
                     'TrxNo': Imgr1.TrxNo,
@@ -62,9 +64,11 @@ appControllers.controller('GrListCtrl', [
             }
         };
         $scope.returnMain = function () {
+          // SqlService.Delete('Imgr2_Receipt').then(function (res) {});
             $state.go('index.main', {}, {
                 reload: true
             });
+
         };
     }
 ]);
@@ -138,7 +142,7 @@ appControllers.controller('GrDetailCtrl', [
         var setScanQty = function (barcode, imgr2) {
             if (is.equal(imgr2.SerialNoFlag, 'Y')) {
                 $scope.Detail.Scan.Qty = imgr2.ScanQty;
-                $scope.Detail.Scan.SerialNoFlag : imgr2.SerialNoFlag;
+                $scope.Detail.Scan.SerialNoFlag = imgr2.SerialNoFlag;
                 $('#txt-sn').removeAttr('readonly');
             } else {
                 imgr2.ScanQty += 1;
@@ -168,7 +172,7 @@ appControllers.controller('GrDetailCtrl', [
                 $scope.Detail.Imgr2.CustBatchNo = imgr2.UserDefine1;
                 setScanQty(barcode, imgr2);
             } else {
-                PopupService.Alert(popup, 'Wrong BarCode');
+                PopupService.Alert(popup, 'Wrong BarCode');            
             }
         };
         var setSnQty = function (barcode, imgr2) {
@@ -287,7 +291,7 @@ appControllers.controller('GrDetailCtrl', [
             } else {
                 return false;
             }
-        }
+        };
         $scope.clearInput = function (type) {
             if (is.equal(type, 'BarCode') && is.not.empty($scope.Detail.Scan.BarCode)) {
                 $scope.Detail.Scan = {
@@ -348,7 +352,7 @@ appControllers.controller('GrDetailCtrl', [
                             BarCode: results.rows.item(i).BarCode,
                             Qty: 0
                         };
-                        if (imgr2.BarCode != null && imgr2.BarCode.length > 0) {
+                        if (imgr2.BarCode !== null && imgr2.BarCode.length > 0) {
                             switch (results.rows.item(i).DimensionFlag) {
                             case '1':
                                 imgr2.Qty = results.rows.item(i).PackingQty;

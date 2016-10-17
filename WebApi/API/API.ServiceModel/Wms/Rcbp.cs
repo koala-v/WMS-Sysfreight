@@ -22,7 +22,7 @@ namespace WebApi.ServiceModel.Wms
     {
         public IDbConnectionFactory DbConnectionFactory { get; set; }
         public List<Rcbp1> Get_Rcbp1_List(Rcbp request)
-        {
+         {
             List<Rcbp1> Result = null;
             try
             {

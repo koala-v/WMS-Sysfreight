@@ -140,18 +140,18 @@ appControllers.controller('GtListCtrl', [
                 objUri.addSearch('UserID', sessionStorage.getItem('UserId').toString());
                 ApiService.Get(objUri, false).then(function success(result) {
                     var imit1 = result.data.results[0];
+                    var QtyList = '';
+                    var ImpmTrxNoList = '';
+                    var NewStoreNoList = '';
+                    var LineItemNoList = '';
+                    var LineItemNo = 0;
                     if (imit1.TrxNo > 0 && $scope.Impm1s.length > 0) {
                         $ionicLoading.show();
                         for (var node in $scope.Impm1s) {
                             var impm1s = $scope.Impm1s[node];
                             var len = impm1s.tree.length;
-                            var LineItemNo = 0,
-                                i = 0,
+                            var   i = 0,
                                 count = 0;
-                            var QtyList = '';
-                            var ImpmTrxNoList = '';
-                            var NewStoreNoList = '';
-                            var LineItemNoList = '';
                             for (i = 0; i < len; i++) {
                                 var impm1 = {
                                     TrxNo: impm1s.tree[i].TrxNo,
@@ -160,6 +160,7 @@ appControllers.controller('GtListCtrl', [
                                     FromToStoreNo: impm1s.tree[i].FromToStoreNo
                                 };
                                 if (impm1.Qty > 0 && is.not.empty(impm1.FromToStoreNo)) {
+
                                     LineItemNo = LineItemNo + 1;
                                     if (ImpmTrxNoList === '') {
                                         QtyList = impm1.Qty;
@@ -173,22 +174,22 @@ appControllers.controller('GtListCtrl', [
                                         LineItemNoList = LineItemNoList + ',' + LineItemNo;
                                     }
                                 }
-                                if (ImpmTrxNoList != '') {
-                                    var objUri = ApiService.Uri(true, '/api/wms/imit1/confirm');
-                                    objUri.addSearch('TrxNo', imit1.TrxNo);
-                                    objUri.addSearch('UpdateBy', sessionStorage.getItem('UserId').toString());
-                                    objUri.addSearch('NewStoreNoList', NewStoreNoList);
-                                    objUri.addSearch('LineItemNoList', LineItemNoList);
-                                    objUri.addSearch('Impm1TrxNoList', ImpmTrxNoList);
-                                    objUri.addSearch('QtyList', QtyList);
-                                    ApiService.Get(objUri, false).then(function success(result) {
-                                        PopupService.Info(popup, 'Comfirm Success').then(function () {
-                                            $scope.clearImpm1s();
-                                            $scope.returnMain();
-                                        });
-                                    });
-                                }
                             }
+                        }
+                        if (ImpmTrxNoList !=='') {
+                            var objUri = ApiService.Uri(true, '/api/wms/imit1/confirm');
+                            objUri.addSearch('TrxNo', imit1.TrxNo);
+                            objUri.addSearch('UpdateBy', sessionStorage.getItem('UserId').toString());
+                            objUri.addSearch('NewStoreNoList', NewStoreNoList);
+                            objUri.addSearch('LineItemNoList', LineItemNoList);
+                            objUri.addSearch('Impm1TrxNoList', ImpmTrxNoList);
+                            objUri.addSearch('QtyList', QtyList);
+                            ApiService.Get(objUri, false).then(function success(result) {
+                                PopupService.Info(popup, 'Comfirm Success').then(function () {
+                                    $scope.clearImpm1s();
+                                    $scope.returnMain();
+                                });
+                            });
                         }
                         $ionicLoading.hide();
                     }

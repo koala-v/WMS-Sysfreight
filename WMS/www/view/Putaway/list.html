@@ -31,11 +31,11 @@
                     </ui-select>
                 </div>
             </div>
-            <input type="text" id="iGrNNo" style="padding-right: 14px;">
+            <!-- <input type="text" id="iGrNNo" style="padding-right: 14px;"> -->
             <hr style="margin-top:-0.3em;">
         </div>
     </ion-pane>
-    <ion-content style="margin-top:100px;">
+    <ion-content style="margin-top:100px;" >
         <ion-list tabindex="-1">
             <div class="card" ng-repeat="Imgr2 in Imgr2s">
                 <div class="item item-input">
@@ -78,7 +78,7 @@
                     <div class="col col-80" style="padding:0px;">
                         <label class="item item-input">
                             <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Store No&nbsp;&nbsp;:</span>
-                            <input type="text" id="txt-storeno-{{ Imgr2.LineItemNo }}" ng-model="Imgr2.StoreNo" style="padding-right: 14px;">
+                            <input type="text" id="txt-storeno-{{ Imgr2.LineItemNo }}" ng-model="Imgr2.StoreNo" style="padding-right: 14px;text-transform:uppercase;">
                         </label>
                     </div>
                     <div class="col col-10">

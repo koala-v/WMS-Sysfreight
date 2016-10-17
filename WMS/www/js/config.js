@@ -2,15 +2,15 @@
 var appConfig = angular.module('WMSAPP.config',[]);
 appConfig.constant('ENV', {
     website:      'www.sysfreight.net/app/wms/sysfreight',
-    api:          'localhost',
-    // api: 'localhost:26721',
+    // api:          'localhost',
+    api: 'localhost:26721',
     reset:  {
         website:      'www.sysfreight.net/app/wms/sysfreight',
         api:          'www.sysfreight.net/apis/wms/sysfreight',
         port:         '8081'
     },
     ssl:          false, // 0 : false, 1 : true
-     port:         '52603', // http port no
+    //  port:         '52603', // http port no
     debug:        true,
     mock:         false,
     fromWeb:      true,
@@ -31,7 +31,7 @@ appConfig.constant('ENV', {
     configFile:   'config.txt',
     version:      '1.0.7',
     parameter: {
-        showSerialNo : false
+        showSerialNo : true
     },
     apiMap: {
         login: {
