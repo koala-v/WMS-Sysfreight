@@ -185,9 +185,9 @@ appControllers.controller('GtListCtrl', [
                             objUri.addSearch('Impm1TrxNoList', ImpmTrxNoList);
                             objUri.addSearch('QtyList', QtyList);
                             ApiService.Get(objUri, false).then(function success(result) {
-                                PopupService.Info(popup, 'Comfirm Success').then(function () {
+                                PopupService.Info(popup, 'Confirm Success').then(function () {
                                     $scope.clearImpm1s();
-                                    $scope.returnMain();
+                                    // $scope.returnMain();
                                 });
                             });
                         }

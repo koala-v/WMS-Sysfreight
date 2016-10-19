@@ -85,40 +85,45 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
-                    string strSql = "Select Impm1.TrxNo, Impm1.BatchLineItemNo, IsNull(ProductCode,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
-                                    "IsNull(ProductName,'') AS ProductName, IsNull(GoodsReceiveorIssueNo,'') AS GoodsReceiveorIssueNo, IsNull(UserDefine1,'') AS UserDefine1," +
-                                    "b.QtyBal, '' AS FromToStoreNo, 0 AS ScanQty " +
-                                    "From Impm1 Join (Select (Select top 1 Imit1.StatusCode from imit1 Where imit1.GoodsTransferNoteNo = a.GoodsReceiveorIssueNo) AS ImitStatus, a.TrxNo, " +
-                                    "(CASE a.DimensionFlag When '1' THEN a.BalancePackingQty When '2' THEN a.BalanceWholeQty ELSE a.BalanceLooseQty END) AS QtyBal From Impm1 a ) b on b.TrxNo = impm1.TrxNo " +
-                                    "Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0  ";
-                    if (request.CustomerCode != null && request.CustomerCode != "")
+                    if ((request.WarehouseCode != null && request.WarehouseCode != "") && (request.StoreNo != null && request.StoreNo != ""))
                     {
-                        strSql = strSql + " AND CustomerCode = " + Modfunction.SQLSafeValue(request.CustomerCode);
-                    }
-                    strSql = strSql + " order by impm1.ProductCode " ;
-                    Results = db.Select<Impm1_Transfer>(strSql);
-                    for (int i = 0; i < Results.Count; i++)
-                    {
-                        string BatchNo = Results[i].name;
-                        Impm1_Transfer impm1 = Results[i];
-                        bool blnExistBatchNo = false;
-                        foreach (Impm1_Transfer_Tree ResultTree in ResultTrees)
+                        string strSql = "Select Impm1.TrxNo, Impm1.BatchLineItemNo, IsNull(ProductCode,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
+                                  "IsNull(ProductName,'') AS ProductName, IsNull(GoodsReceiveorIssueNo,'') AS GoodsReceiveorIssueNo, IsNull(UserDefine1,'') AS UserDefine1," +
+                                  "b.QtyBal, '' AS FromToStoreNo, 0 AS ScanQty " +
+                                  "From Impm1 Join (Select (Select top 1 Imit1.StatusCode from imit1 Where imit1.GoodsTransferNoteNo = a.GoodsReceiveorIssueNo) AS ImitStatus, a.TrxNo, " +
+                                  "(CASE a.DimensionFlag When '1' THEN a.BalancePackingQty When '2' THEN a.BalanceWholeQty ELSE a.BalanceLooseQty END) AS QtyBal From Impm1 a ) b on b.TrxNo = impm1.TrxNo " +
+                                  "Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0  ";
+                        if (request.CustomerCode != null && request.CustomerCode != "")
                         {
-                            if (ResultTree.name.Equals(BatchNo))
+                            strSql = strSql + " AND CustomerCode = " + Modfunction.SQLSafeValue(request.CustomerCode);
+                        }
+                        strSql = strSql + " order by impm1.ProductCode ";
+                        Results = db.Select<Impm1_Transfer>(strSql);
+                        for (int i = 0; i < Results.Count; i++)
+                        {
+                            string BatchNo = Results[i].name;
+                            Impm1_Transfer impm1 = Results[i];
+                            bool blnExistBatchNo = false;
+                            foreach (Impm1_Transfer_Tree ResultTree in ResultTrees)
                             {
-                                blnExistBatchNo = true;
-                                ResultTree.tree.Add(impm1);
+                                if (ResultTree.name.Equals(BatchNo))
+                                {
+                                    blnExistBatchNo = true;
+                                    ResultTree.tree.Add(impm1);
+                                }
+                            }
+                            if (!blnExistBatchNo)
+                            {
+                                Impm1_Transfer_Tree impm1_tree = new Impm1_Transfer_Tree();
+                                impm1_tree.name = BatchNo;
+                                impm1_tree.tree = new List<Impm1_Transfer>();
+                                impm1_tree.tree.Add(impm1);
+                                ResultTrees.Add(impm1_tree);
                             }
                         }
-                        if (!blnExistBatchNo)
-                        {
-                            Impm1_Transfer_Tree impm1_tree = new Impm1_Transfer_Tree();
-                            impm1_tree.name = BatchNo;
-                            impm1_tree.tree = new List<Impm1_Transfer>();
-                            impm1_tree.tree.Add(impm1);
-                            ResultTrees.Add(impm1_tree);
-                        }
-                    }
+
+                    }                                       
+                  
                 }
             }
             catch { throw; }

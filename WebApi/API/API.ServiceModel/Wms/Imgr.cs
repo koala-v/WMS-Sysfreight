@@ -77,7 +77,10 @@ namespace WebApi.ServiceModel.Wms
                                             "Select Top 10 Imgr1.* From Imgr1 " +
                                             "Where IsNUll(StatusCode,'')<>'DEL' And IsNUll(StatusCode,'')<>'EXE' And IsNUll(StatusCode,'')<>'CMP' " +
                                             "And (Select count(*) from Imgr2 Where Imgr2.TrxNo=Imgr1.TrxNo) > 0 " +
-                                            "And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'"
+                                            "And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'" +
+                                            "And IsNUll(CustomerCode,'') = '" + request.CustomerCode + "' " 
+
+
                             );
                         }
                         else

@@ -53,7 +53,7 @@ appControllers.controller('GrListCtrl', [
             return moment(utc).format('DD-MMM-YYYY');
         };
         $scope.GoToDetail = function (Imgr1) {
-            if (Imgr1 !== null) {
+            if (Imgr1 !== null && is.not.undefined(Imgr1)) {
                 $state.go('grDetail', {
                     'CustomerCode': Imgr1.CustomerCode,
                     'TrxNo': Imgr1.TrxNo,
@@ -172,7 +172,7 @@ appControllers.controller('GrDetailCtrl', [
                 $scope.Detail.Imgr2.CustBatchNo = imgr2.UserDefine1;
                 setScanQty(barcode, imgr2);
             } else {
-                PopupService.Alert(popup, 'Wrong BarCode');            
+                PopupService.Alert(popup, 'Wrong BarCode');
             }
         };
         var setSnQty = function (barcode, imgr2) {

@@ -134,7 +134,10 @@ namespace WebApi.ServiceModel.Wms
                                     {
                                         StatusCode = request.StatusCode,
                                         CompleteBy = request.UserID,
-                                        CompleteDate = DateTime.Now
+                                        CompleteDate = DateTime.Now,
+                                        UpdateBy= request.UserID,
+                                        UpdateDateTime= DateTime.Now
+
                                     },
                                     p => p.TrxNo == int.Parse(request.TrxNo)
                     );

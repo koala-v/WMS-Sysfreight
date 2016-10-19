@@ -82,7 +82,9 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
-                    string strSql = "EXEC spi_Imit_Confirm " + int.Parse(request.TrxNo) + ",'" + request.UpdateBy + "'";
+            
+                    //string strSql = "EXEC spi_Imit_Confirm " + int.Parse(request.TrxNo) + ",'" + request.UpdateBy + "'"; 'yicong 20161019
+                   string  strSql = "Update Imit1 set StatusCode='EXE',UpdateBy='"+request.UpdateBy +"' where TrxNo='"+request.TrxNo+"' ";
                     Result = db.SqlScalar<int>(strSql);
                 }
             }
