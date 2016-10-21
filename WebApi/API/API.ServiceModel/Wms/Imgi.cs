@@ -115,7 +115,7 @@ namespace WebApi.ServiceModel.Wms
                                     "0 AS QtyBal, 0 AS ScanQty " +
                                     "From Imgi2 " +
                                     "Left Join Imgi1 On Imgi2.TrxNo=Imgi1.TrxNo " +
-                                    "Where (IsNull(Imgi1.StatusCode,'')='USE' Or IsNull(Imgi1.StatusCode,'')='CMP') And Imgi1.GoodsIssueNoteNo='" + request.GoodsIssueNoteNo + "'";
+                                    "Where IsNull(Imgi1.StatusCode,'')='EXE'  And Imgi1.GoodsIssueNoteNo='" + request.GoodsIssueNoteNo + "'";
                     Result = db.Select<Imgi2_Verify>(strSql);
                 }
             }
