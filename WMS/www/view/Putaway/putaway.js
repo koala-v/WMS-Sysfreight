@@ -69,7 +69,7 @@ appControllers.controller( 'PutawayListCtrl', [
         $scope.refreshGrnNos = function ( Grn ) {
             if ( is.not.undefined( Grn ) && is.not.empty( Grn ) ) {
                 var objUri = ApiService.Uri( true, '/api/wms/imgr1' );
-                objUri.addSearch( 'StatusCode', 'EXE' );
+                objUri.addSearch( 'StatusCode', 'USE' );
                 objUri.addSearch( 'GoodsReceiptNoteNo', Grn );
                 ApiService.Get( objUri, false ).then( function success( result ) {
                     $scope.GrnNos = result.data.results;
@@ -81,7 +81,7 @@ appControllers.controller( 'PutawayListCtrl', [
         $scope.showImgr1 = function ( Customer ) {
             if ( is.not.undefined( Customer ) && is.not.empty( Customer ) ) {
                 var objUri = ApiService.Uri( true, '/api/wms/imgr1' );
-                objUri.addSearch( 'StatusCode', 'EXE' );
+                objUri.addSearch( 'StatusCode', 'USE' );
                 objUri.addSearch( 'CustomerCode', Customer );
                 ApiService.Get( objUri, true ).then( function success( result ) {
                     $scope.Imgr1s = result.data.results;
