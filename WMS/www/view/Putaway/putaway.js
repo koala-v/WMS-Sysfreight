@@ -35,6 +35,7 @@ appControllers.controller( 'PutawayListCtrl', [
                 objUri.addSearch( 'StoreNo', imgr2.StoreNo );
                 objUri.addSearch( 'TrxNo', imgr2.TrxNo );
                 objUri.addSearch( 'LineItemNo', imgr2.LineItemNo );
+                objUri.addSearch( 'UserID', sessionStorage.getItem('UserId').toString() );
                 ApiService.Get( objUri, false ).then( function success( result ) {} );
             }
             $ionicLoading.hide();

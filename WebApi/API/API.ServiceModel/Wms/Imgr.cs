@@ -77,8 +77,8 @@ namespace WebApi.ServiceModel.Wms
                                             "Select Top 10 Imgr1.* From Imgr1 " +
                                             "Where IsNUll(StatusCode,'')<>'DEL' And IsNUll(StatusCode,'')<>'EXE' And IsNUll(StatusCode,'')<>'CMP' " +
                                             "And (Select count(*) from Imgr2 Where Imgr2.TrxNo=Imgr1.TrxNo) > 0 " +
-                                            "And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'" +
-                                            "And IsNUll(CustomerCode,'') = '" + request.CustomerCode + "' " 
+                                            "And IsNUll(GoodsReceiptNoteNo,'') LIKE '" + request.GoodsReceiptNoteNo + "%'" 
+                                            //"And IsNUll(CustomerCode,'') = '" + request.CustomerCode + "' " 
 
 
                             );
@@ -188,6 +188,7 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
+
                     Result = db.SqlScalar<int>("EXEC spi_Imgr_Confirm @TrxNo,@UpdateBy", new { TrxNo = int.Parse(request.TrxNo), UpdateBy = request.UserID });
                     if (Result != -1)
                     {
@@ -197,7 +198,7 @@ namespace WebApi.ServiceModel.Wms
                                 );
                         if (Result1 != null && Result1.Count > 0)
                         {
-                            for (int i = 0; i < Result1.Count - 1; i++)
+                            for (int i = 0; i < Result1.Count ; i++)
                             {
                                 Result = db.SqlScalar<int>("Update Imgr2 Set MovementTrxNo=(Select TrxNo From Impm1 Where BatchNo=@GoodsReceiptNoteNo And BatchLineItemNo=@BatchLineItemNo And CustomerCode=@CustomerCode) Where TrxNo=@TrxNo  And LineItemNo=@LineItemNo", new { GoodsReceiptNoteNo = Result1[i].GoodsReceiptNoteNo, BatchLineItemNo = Result1[i].LineItemNo, CustomerCode = Result1[i].CustomerCode, TrxNo = int.Parse(request.TrxNo), LineItemNo = Result1[i].LineItemNo });
                             }
@@ -215,6 +216,8 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
+                    Result = db.SqlScalar<int>("EXEC spi_Imgr_Confirm @TrxNo,@UpdateBy", new { TrxNo = int.Parse(request.TrxNo), UpdateBy =request.UserID });
+
                     Result = db.Update<Imgr2>(
                                     new
                                     {
@@ -222,6 +225,21 @@ namespace WebApi.ServiceModel.Wms
                                     },
                                     p => p.TrxNo == int.Parse(request.TrxNo) && p.LineItemNo == int.Parse(request.LineItemNo)
                     );
+
+                    if (Result != -1)
+                    {
+                        List<Imgr2_Receipt> Result1 = null;
+                        Result1 = db.Select<Imgr2_Receipt>(
+                                                "select Imgr1.GoodsReceiptNoteNo,Imgr1.CustomerCode,Imgr2.LineItemNo,Imgr1.TrxNo from imgr1 join imgr2 on imgr1.TrxNo =imgr2.TrxNo where Imgr1.TrxNo =  '" + request.TrxNo + "' "
+                                );
+                        if (Result1 != null && Result1.Count > 0)
+                        {
+                            for (int i = 0; i < Result1.Count; i++)
+                            {
+                                Result = db.SqlScalar<int>("Update Imgr2 Set MovementTrxNo=(Select TrxNo From Impm1 Where BatchNo=@GoodsReceiptNoteNo And BatchLineItemNo=@BatchLineItemNo And CustomerCode=@CustomerCode) Where TrxNo=@TrxNo  And LineItemNo=@LineItemNo", new { GoodsReceiptNoteNo = Result1[i].GoodsReceiptNoteNo, BatchLineItemNo = Result1[i].LineItemNo, CustomerCode = Result1[i].CustomerCode, TrxNo = int.Parse(request.TrxNo), LineItemNo = Result1[i].LineItemNo });
+                            }
+                        }
+                    }
                 }
             }
             catch { throw; }

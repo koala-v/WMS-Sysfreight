@@ -35,7 +35,7 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
-        $scope.ShowImgr1 = function (Customer) {
+        $sope.ShowImgr1 = function (Customer) {
             if (is.not.undefined(Customer) && is.not.empty(Customer)) {
                 var objUri = ApiService.Uri(true, '/api/wms/imgr1');
                 objUri.addSearch('CustomerCode', Customer);
@@ -160,7 +160,7 @@ appControllers.controller('GrDetailCtrl', [
                     Qty: imgr2.ScanQty
                 };
             }
-            $scope.$apply();
+            // $scope.$apply();
         };
         var showImpr = function (barcode) {
             if (hmImgr2.has(barcode)) {
@@ -169,6 +169,11 @@ appControllers.controller('GrDetailCtrl', [
                     ProductCode: imgr2.ProductCode,
                     ProductDescription: imgr2.ProductDescription
                 };
+                if (is.equal(imgr2.SerialNoFlag,'Y')){
+                    $('#txt-sn').attr('readonly', false);
+                }else{
+                    $('#txt-sn').attr('readonly', true);
+                }
                 $scope.Detail.Imgr2.CustBatchNo = imgr2.UserDefine1;
                 setScanQty(barcode, imgr2);
             } else {
@@ -186,7 +191,7 @@ appControllers.controller('GrDetailCtrl', [
             SqlService.Update('Imgr2_Receipt', objImgr2, strFilter).then();
             $scope.Detail.Scan.Qty = imgr2.ScanQty;
             $scope.Detail.Scan.SerialNo = '';
-            $scope.$apply();
+            // $scope.$apply();
         };
         var showSn = function (sn) {
             if (is.not.empty(sn)) {
@@ -208,7 +213,7 @@ appControllers.controller('GrDetailCtrl', [
                         hmImsn1.set(barcode, SnArray);
                     } else {
                         $scope.Detail.Scan.SerialNo = '';
-                        $scope.$apply();
+                        // $scope.$apply();
                         return;
                     }
                 } else {
@@ -413,8 +418,8 @@ appControllers.controller('GrDetailCtrl', [
                     SnArray = null,
                     SerialNos = '';
                 if (is.equal(imgr2.SerialNoFlag, 'Y')) {
-                    if (hmImsn1.count() > 0 && hmImsn1.has(barcode)) {
-                        SnArray = hmImsn1.get(barcode);
+                    if (hmImsn1.count() > 0 && hmImsn1.has(imgr2.BarCode)) {
+                        SnArray = hmImsn1.get(imgr2.BarCode);
                     }
                     for (var i in SnArray) {
                         SerialNos = SerialNos + ',' + SnArray[i];
@@ -423,7 +428,7 @@ appControllers.controller('GrDetailCtrl', [
                     var objUri = ApiService.Uri(true, '/api/wms/imsn1/create');
                     objUri.addSearch('ReceiptNoteNo', $scope.Detail.GRN);
                     objUri.addSearch('ReceiptLineItemNo', imgr2.LineItemNo);
-                    objUri.addSearch('SerialNos=', SerialNos);
+                    objUri.addSearch('SerialNos', SerialNos);
                     objUri.addSearch('Imgr2TrxNo', imgr2.TrxNo);
                     ApiService.Get(objUri, true).then(function success(result) {});
                 }

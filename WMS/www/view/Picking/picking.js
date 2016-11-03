@@ -483,6 +483,13 @@ appControllers.controller('PickingDetailCtrl', [
                 }
             });
         };
+        $scope.lost=function(){
+           if (is.equal('storeno', 'storeno') && is.not.empty($scope.Detail.Scan.StoreNo)) {
+              if (blnVerifyInput('StoreNo')) {
+                  $('#txt-barcode').focus();
+              }
+          }
+        };
         $scope.enter = function (ev, type) {
             if (is.equal(ev.keyCode, 13)) {
                 if (is.equal(type, 'barcode') && is.not.empty($scope.Detail.Scan.BarCode)) {

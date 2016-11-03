@@ -92,7 +92,7 @@ namespace WebApi.ServiceModel.Wms
                                   "b.QtyBal, '' AS FromToStoreNo, 0 AS ScanQty " +
                                   "From Impm1 Join (Select (Select top 1 Imit1.StatusCode from imit1 Where imit1.GoodsTransferNoteNo = a.GoodsReceiveorIssueNo) AS ImitStatus, a.TrxNo, " +
                                   "(CASE a.DimensionFlag When '1' THEN a.BalancePackingQty When '2' THEN a.BalanceWholeQty ELSE a.BalanceLooseQty END) AS QtyBal From Impm1 a ) b on b.TrxNo = impm1.TrxNo " +
-                                  "Where WarehouseCode='" + request.WarehouseCode + "' And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0  ";
+                                  "Where WarehouseCode='" + request.WarehouseCode + "' And ( impm1.TrxType =1 or impm1.TrxType =3) And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0  ";
                         if (request.CustomerCode != null && request.CustomerCode != "")
                         {
                             strSql = strSql + " AND CustomerCode = " + Modfunction.SQLSafeValue(request.CustomerCode);

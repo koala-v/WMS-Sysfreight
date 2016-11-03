@@ -4,7 +4,7 @@ appConfig.constant('ENV', {
     website:      'www.sysfreight.net/app/wms/sysfreight',
       api:        'www.sysfreight.net/apis/wms/sysfreight',
     // api:          'localhost',
-    // api: 'localhost:26721',
+    api: 'localhost:26721',
     reset:  {
         website:      'www.sysfreight.net/app/wms/sysfreight',
         api:          'www.sysfreight.net/apis/wms/sysfreight',
@@ -12,7 +12,7 @@ appConfig.constant('ENV', {
     },
     ssl:          false, // 0 : false, 1 : true
     //  port:         '52603', // http port no
-    port:         '8081',
+    // port:         '8081',
     debug:        true,
     mock:         false,
     fromWeb:      true,
