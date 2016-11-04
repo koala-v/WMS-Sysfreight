@@ -204,7 +204,7 @@ appControllers.controller( 'VginDetailCtrl', [
                         hmImsn1.set( barcode, SnArray );
                     } else {
                         $scope.Detail.Scan.SerialNo = '';
-                        $scope.$apply();
+                        // $scope.$apply();
                         return;
                     }
                 } else {
@@ -329,7 +329,11 @@ appControllers.controller( 'VginDetailCtrl', [
                     //if ($('#txt-sn').attr("readonly") != "readonly") {
                     $cordovaBarcodeScanner.scan().then( function ( imageData ) {
                         $scope.Detail.Scan.SerialNo = imageData.text;
-                        showSn( $scope.Detail.Scan.SerialNo );
+                        // showSn( $scope.Detail.Scan.SerialNo );
+
+                        if ( blnVerifyInput( 'SerialNo' ) ) {
+                            showSn( $scope.Detail.Scan.SerialNo );
+                        }
                     }, function ( error ) {
                         $cordovaToast.showShortBottom( error );
                     } );

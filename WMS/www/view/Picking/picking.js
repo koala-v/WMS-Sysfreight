@@ -172,7 +172,7 @@ appControllers.controller('PickingDetailCtrl', [
                 var obj = {
                     ScanQty: imgi2.ScanQty
                 };
-                var strFilter = 'TrxNo=' + imgi2.TrxNo + ' And LineItemNo=' + imgi2.LineItemNo;
+                var strFilter = 'TrxNo=' + imgi2.TrxNo + ' And LineItemNo=' + imgi2.LineItemNo+'And RowNum='+imgi2.RowNum;
                 SqlService.Update('Imgi2_Picking', obj, strFilter).then(function (res) {
                     $scope.Detail.Scan.Qty = imgi2.ScanQty;
                     $scope.Detail.Scan.BarCode = '';
@@ -372,14 +372,20 @@ appControllers.controller('PickingDetailCtrl', [
                 if (is.equal(type, 'StoreNo')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
                         $scope.Detail.Scan.StoreNo = imageData.text;
-                        $('#txt-barcode').focus();
+                        // $('#txt-barcode').focus();
+                        if (blnVerifyInput('StoreNo')) {
+                            $('#txt-barcode').focus();
+                        }
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });
                 } else if (is.equal(type, 'BarCode')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
                         $scope.Detail.Scan.BarCode = imageData.text;
-                        showImpr($scope.Detail.Scan.BarCode, true);
+                        if (blnVerifyInput('BarCode')) {
+                          showImpr($scope.Detail.Scan.BarCode, true);
+                        }
+                        // showImpr($scope.Detail.Scan.BarCode, true);
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });
@@ -387,7 +393,10 @@ appControllers.controller('PickingDetailCtrl', [
                     //if ($('#txt-sn').attr("readonly") != "readonly") {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
                         $scope.Detail.Scan.SerialNo = imageData.text;
-                        showSn($scope.Detail.Scan.SerialNo, false);
+                        // showSn($scope.Detail.Scan.SerialNo, false);
+                        if (blnVerifyInput('SerialNo')) {
+                          showSn($scope.Detail.Scan.SerialNo, false);
+                        }
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });

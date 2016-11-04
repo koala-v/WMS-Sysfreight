@@ -35,7 +35,7 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
-        $sope.ShowImgr1 = function (Customer) {
+        $scope.ShowImgr1 = function (Customer) {
             if (is.not.undefined(Customer) && is.not.empty(Customer)) {
                 var objUri = ApiService.Uri(true, '/api/wms/imgr1');
                 objUri.addSearch('CustomerCode', Customer);
