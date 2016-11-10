@@ -172,10 +172,12 @@ appControllers.controller('PickingDetailCtrl', [
                 var obj = {
                     ScanQty: imgi2.ScanQty
                 };
-                var strFilter = 'TrxNo=' + imgi2.TrxNo + ' And LineItemNo=' + imgi2.LineItemNo+'And RowNum='+imgi2.RowNum;
+                var strFilter = 'TrxNo=' + imgi2.TrxNo + ' And LineItemNo=' + imgi2.LineItemNo + ' And RowNum=' + imgi2.RowNum;
                 SqlService.Update('Imgi2_Picking', obj, strFilter).then(function (res) {
                     $scope.Detail.Scan.Qty = imgi2.ScanQty;
                     $scope.Detail.Scan.BarCode = '';
+                    $scope.Detail.Imgi2s[$scope.Detail.Imgi2.RowNum-1].ScanQty = imgi2.ScanQty;
+                    $scope.Detail.Imgi2.ScanQty = imgi2.ScanQty;
                     $scope.Detail.Imgi2.QtyBal = imgi2.Qty - imgi2.ScanQty;
                     if (is.equal(imgi2.Qty, imgi2.ScanQty)) {
                         $scope.showNext();
@@ -185,8 +187,11 @@ appControllers.controller('PickingDetailCtrl', [
         };
         var showImpr = function (barcode, blnScan) {
             if (hmImgi2.has(barcode)) {
-                var imgi2 = hmImgi2.get(barcode);
-                setScanQty(barcode, imgi2);
+              // hmImgi2.set(barcode, $scope.Detail.Imgi2s[$scope.Detail.Imgi2.RowNum]);
+              //   var imgi2 = hmImgi2.get(barcode);
+              hmImgi2.remove(barcode);
+              hmImgi2.set(barcode, $scope.Detail.Imgi2);
+              setScanQty(barcode, $scope.Detail.Imgi2);
             } else {
                 showPopup('Invalid Product Picked', 'assertive');
             }
@@ -202,6 +207,8 @@ appControllers.controller('PickingDetailCtrl', [
             SqlService.Update('Imgi2_Picking', obj, strFilter).then(function (res) {
                 $scope.Detail.Scan.Qty = imgi2.ScanQty;
                 $scope.Detail.Scan.SerialNo = '';
+                $scope.Detail.Imgi2s[$scope.Detail.Imgi2.RowNum-1].ScanQty = imgi2.ScanQty;
+                $scope.Detail.Imgi2.ScanQty = imgi2.ScanQty;
                 if (is.equal(imgi2.Qty, imgi2.ScanQty)) {
                     $scope.showNext();
                 } else {
@@ -230,7 +237,7 @@ appControllers.controller('PickingDetailCtrl', [
                         hmImsn1.set(barcode, SnArray);
                     } else {
                         $scope.Detail.Scan.SerialNo = '';
-                        $scope.$apply();
+                        // $scope.$apply();
                         return;
                     }
                 } else {
@@ -256,6 +263,7 @@ appControllers.controller('PickingDetailCtrl', [
                     BarCode: $scope.Detail.Imgi2s[row].BarCode,
                     SerialNo: $scope.Detail.Imgi2s[row].SerialNo,
                     Qty: $scope.Detail.Imgi2s[row].Qty,
+                    ScanQty: $scope.Detail.Imgi2s[row].ScanQty,
                     QtyBal: $scope.Detail.Imgi2s[row].Qty - $scope.Detail.Imgi2s[row].ScanQty
                 };
                 $scope.Detail.Scan.Qty = $scope.Detail.Imgi2s[row].ScanQty;
@@ -340,7 +348,9 @@ appControllers.controller('PickingDetailCtrl', [
         };
         $scope.changeQty = function () {
             if (is.not.empty($scope.Detail.Imgi2.BarCode) && hmImgi2.count() > 0) {
-                var imgi2 = hmImgi2.get($scope.Detail.Imgi2.BarCode);
+                hmImgi2.remove($scope.Detail.Imgi2.BarCode);
+                hmImgi2.set($scope.Detail.Imgi2.BarCode, $scope.Detail.Imgi2);
+                var imgi2 = $scope.Detail.Imgi2;
                 var promptPopup = $ionicPopup.show({
                     template: '<input type="number" ng-model="Detail.Scan.Qty" ng-change="checkQty();">',
                     title: 'Enter Qty',
@@ -348,14 +358,16 @@ appControllers.controller('PickingDetailCtrl', [
                     scope: $scope,
                     buttons: [{
                         text: 'Cancel',
-                        onTap: function(e){
-                          $scope.Detail.Scan.Qty=$scope.Detail.Imgi2.Qty-$scope.Detail.Imgi2.QtyBal;
+                        onTap: function (e) {
+                            $scope.Detail.Scan.Qty = $scope.Detail.Imgi2.Qty - $scope.Detail.Imgi2.QtyBal;
                         }
                     }, {
                         text: '<b>Save</b>',
                         type: 'button-positive',
                         onTap: function (e) {
                             imgi2.ScanQty = $scope.Detail.Scan.Qty;
+                            $scope.Detail.Imgi2s[$scope.Detail.Imgi2.RowNum-1].ScanQty = imgi2.ScanQty;
+                            $scope.Detail.Imgi2.ScanQty = imgi2.ScanQty;
                             $scope.Detail.Imgi2.QtyBal = imgi2.Qty - imgi2.ScanQty;
                             var obj = {
                                 ScanQty: imgi2.ScanQty
@@ -383,7 +395,7 @@ appControllers.controller('PickingDetailCtrl', [
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
                         $scope.Detail.Scan.BarCode = imageData.text;
                         if (blnVerifyInput('BarCode')) {
-                          showImpr($scope.Detail.Scan.BarCode, true);
+                            showImpr($scope.Detail.Scan.BarCode, true);
                         }
                         // showImpr($scope.Detail.Scan.BarCode, true);
                     }, function (error) {
@@ -395,7 +407,7 @@ appControllers.controller('PickingDetailCtrl', [
                         $scope.Detail.Scan.SerialNo = imageData.text;
                         // showSn($scope.Detail.Scan.SerialNo, false);
                         if (blnVerifyInput('SerialNo')) {
-                          showSn($scope.Detail.Scan.SerialNo, false);
+                            showSn($scope.Detail.Scan.SerialNo, false);
                         }
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
@@ -492,12 +504,12 @@ appControllers.controller('PickingDetailCtrl', [
                 }
             });
         };
-        $scope.lost=function(){
-           if (is.equal('storeno', 'storeno') && is.not.empty($scope.Detail.Scan.StoreNo)) {
-              if (blnVerifyInput('StoreNo')) {
-                  $('#txt-barcode').focus();
-              }
-          }
+        $scope.lost = function () {
+            if (is.equal('storeno', 'storeno') && is.not.empty($scope.Detail.Scan.StoreNo)) {
+                if (blnVerifyInput('StoreNo')) {
+                    $('#txt-barcode').focus();
+                }
+            }
         };
         $scope.enter = function (ev, type) {
             if (is.equal(ev.keyCode, 13)) {

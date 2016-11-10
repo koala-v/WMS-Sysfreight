@@ -255,6 +255,7 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
             } )
             .state( 'grList', {
                 url: '/gr/list',
+                cache: 'false',
                 templateUrl: 'view/GoodsReceipt/list.html',
                 controller: 'GrListCtrl'
             } )
