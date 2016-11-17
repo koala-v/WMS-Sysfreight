@@ -67,6 +67,8 @@ namespace WebApi.ServiceModel.Wms
         public int Confirm_Imit1(Imit request)
         {
             int Result = -1;
+            Boolean blnSameCustomer = false;
+            string OldCustomerCode = "", CustomerCode = "", CustomerName = "";
             if (request.NewStoreNoList != null || request.NewStoreNoList != "")
             {
                 string[] NewSotreNoDetail = request.NewStoreNoList.Split(',');
@@ -75,16 +77,33 @@ namespace WebApi.ServiceModel.Wms
                 string[] QtyDetail = request.QtyList.Split(',');
                 for (int intI = 0; intI < NewSotreNoDetail.Length; intI++)
                 {
-                    Result = Insert_Imit2Detail(int.Parse(Impm1TrxNoDetail[intI]), int.Parse(request.TrxNo), int.Parse(LineItemNoDetail[intI]), int.Parse(QtyDetail[intI]), NewSotreNoDetail[intI], request.UpdateBy);
+                    Result = Insert_Imit2Detail(int.Parse(Impm1TrxNoDetail[intI]), int.Parse(request.TrxNo), int.Parse(LineItemNoDetail[intI]), int.Parse(QtyDetail[intI]), NewSotreNoDetail[intI], request.UpdateBy,ref CustomerCode,ref CustomerName);
+                    if (OldCustomerCode == "" && CustomerCode!="")
+                    {
+                        OldCustomerCode = CustomerCode;
+                        blnSameCustomer = true;
+                    }
+                    else if(OldCustomerCode != CustomerCode){
+                        blnSameCustomer = false;
+                    }
+                }
+                if (blnSameCustomer)
+                {
+
                 }
             }
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
-            
+
                     //string strSql = "EXEC spi_Imit_Confirm " + int.Parse(request.TrxNo) + ",'" + request.UpdateBy + "'"; 'yicong 20161019
-                   string  strSql = "Update Imit1 set StatusCode='EXE',UpdateBy='"+request.UpdateBy +"' where TrxNo='"+request.TrxNo+"' ";
+                    string strCustoemrUpdate = "";
+                    if (blnSameCustomer)
+                    {
+                        strCustoemrUpdate = ",CustomerCode = " + Modfunction.SQLSafeValue(CustomerCode) ;
+                    }
+                   string  strSql = "Update Imit1 set StatusCode='EXE',UpdateBy='"+request.UpdateBy +"'" + strCustoemrUpdate  + " where TrxNo='"+request.TrxNo+"' ";
                     Result = db.SqlScalar<int>(strSql);
                 }
             }
@@ -98,7 +117,7 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
-        public int Insert_Imit2Detail(int Impm1TrxNoNew, int TrxNoNew, int LineItemNoNew, int QtyNew, string NewStoreNoNew, string UpdateByNew)
+        public int Insert_Imit2Detail(int Impm1TrxNoNew, int TrxNoNew, int LineItemNoNew, int QtyNew, string NewStoreNoNew, string UpdateByNew,ref string CustomerCode, ref string CustomerName)
         {
             int Result = -1;
             try
@@ -115,6 +134,8 @@ namespace WebApi.ServiceModel.Wms
                 {
                     if (impm1s.Count > 0)
                     {
+                        CustomerCode = impm1s[0].CustomerCode;
+                        CustomerName = impm1s[0].CustomerName;
                         switch (impm1s[0].DimensionFlag)
                         {
                             case "1":

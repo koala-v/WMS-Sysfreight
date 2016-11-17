@@ -21,5 +21,8 @@ namespace WebApi.ServiceModel.Tables
         public int BalanceWholeQty { get; set; }
         public int PackingPackageSize{ get; set; }
         public int WholePackageSize { get; set; }
+        public string CustomerCode { get; set; }
+        public string CustomerName { get; set; }
     }
 }
+
