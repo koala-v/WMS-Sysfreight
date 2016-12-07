@@ -94,6 +94,13 @@ appControllers.controller('GtListCtrl', [
             $scope.Impm1s = {};
         };
         $scope.showWarehouse();
+
+        $scope.toggleGroup = function (group) {
+            group.show = !group.show;
+        };
+        $scope.isGroupShown = function (group) {
+            return group.show;
+        };
         /*
         $scope.openCam = function ( impm1 ) {
             if(!ENV.fromWeb){
@@ -114,16 +121,20 @@ appControllers.controller('GtListCtrl', [
                 $( '#txt-storeno-' + impm1.BatchLineItemNo ).select();
             }
         };
-        $scope.checkQty = function ( impm1 ) {
-            if ( impm1.ScanQty < 0 ) {
-                $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].ScanQty = 0;
-            } else {
-                if ( impm1.Qty - impm1.ScanQty < 0 ) {
-                    $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].ScanQty = $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].Qty;
-                }
-            }
-        };
+
         */
+
+        $scope.checkQty = function (impm1) {
+            // $scope.Impm1s[ 0].tree[0].ScanQty=5;
+            //       console.log( 'aa');
+            //   if ( impm1.ScanQty < 0 ) {
+            //       $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].ScanQty = 0;
+            //   } else {
+            //       if ( impm1.Qty - impm1.ScanQty < 0 ) {
+            //           $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].ScanQty = $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].Qty;
+            //       }
+            //   }
+        };
         $scope.checkConfirm = function () {
             var blnConfirm = false;
             for (var node in $scope.Impm1s) {
@@ -150,7 +161,7 @@ appControllers.controller('GtListCtrl', [
                         for (var node in $scope.Impm1s) {
                             var impm1s = $scope.Impm1s[node];
                             var len = impm1s.tree.length;
-                            var   i = 0,
+                            var i = 0,
                                 count = 0;
                             for (i = 0; i < len; i++) {
                                 var impm1 = {
@@ -176,7 +187,7 @@ appControllers.controller('GtListCtrl', [
                                 }
                             }
                         }
-                        if (ImpmTrxNoList !=='') {
+                        if (ImpmTrxNoList !== '') {
                             var objUri = ApiService.Uri(true, '/api/wms/imit1/confirm');
                             objUri.addSearch('TrxNo', imit1.TrxNo);
                             objUri.addSearch('UpdateBy', sessionStorage.getItem('UserId').toString());

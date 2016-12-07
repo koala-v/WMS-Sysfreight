@@ -346,6 +346,7 @@ appControllers.controller('PickingDetailCtrl', [
                 }
             }
         };
+
         $scope.changeQty = function () {
             if (is.not.empty($scope.Detail.Imgi2.BarCode) && hmImgi2.count() > 0) {
                 hmImgi2.remove($scope.Detail.Imgi2.BarCode);

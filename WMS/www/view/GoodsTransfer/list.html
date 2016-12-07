@@ -5,19 +5,19 @@
     </ion-header-bar>
     <ion-pane style="margin-top:44px; height:95px; overflow:visible;">
         <div>
-          <div class="row row-center" id="div-list-rcbp">
-              <div class="col col-33" style="text-align:center;">
-                  <label>Customer</label>
-              </div>
-              <div class="col col-67">
-                <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="showImpm1(Rcbp1.selected.BusinessPartyCode,null)">
-                    <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
-                    <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
-                        <div ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"></div>
-                    </ui-select-choices>
-                </ui-select>
-              </div>
-          </div>
+            <div class="row row-center" id="div-list-rcbp">
+                <div class="col col-33" style="text-align:center;">
+                    <label>Customer</label>
+                </div>
+                <div class="col col-67">
+                    <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="showImpm1(Rcbp1.selected.BusinessPartyCode,null)">
+                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
+                        <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
+                            <div ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-33" style="text-align:center;">
                     <label>Warehouse</label>
@@ -48,8 +48,105 @@
         </div>
     </ion-pane>
     <ion-content style="margin-top:135px;">
-        <ion-tree-list items="Impm1s" collapsed="true" template-url="view/GoodsTransfer/ion-item.tmpl.html">
-        </ion-tree-list>
+        <!-- <ion-tree-list items="Impm1s" collapsed="true" template-url="view/GoodsTransfer/ion-item.tmpl.html">
+        </ion-tree-list> -->
+
+        <ion-list>
+            <div ng-repeat="group in Impm1s">
+                <ion-item class="item-stable" ng-click="toggleGroup(group)" ng-class="{active: isGroupShown(group)}">
+                    <i class="icon" ng-class="isGroupShown(group) ? 'ion-minus' : 'ion-plus'"></i> &nbsp; {{group.name}}
+                </ion-item>
+                <ion-item class="item-accordion" ng-repeat="item in group.tree" ng-show="isGroupShown(group)">
+                    <!-- {{item}} -->
+                    <div class="item item-input">
+                        <div class="col-33">
+                            <p>Description<span class="pull-right">:&nbsp;</span></p>
+                        </div>
+                        <div class="col-67">
+                            <div class="item-text-wrap">
+                                <p>
+                                    <span ng-bind="item.ProductDescription"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item item-input">
+                        <div class="col-33">
+                            <p>GRN No<span class="pull-right">:&nbsp;</span></p>
+                        </div>
+                        <div class="col-67">
+                            <div class="item-text-wrap">
+                                <p>
+                                    <span ng-bind="item.GoodsReceiveorIssueNo"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item item-input">
+                        <div class="col-33">
+                            <p>Ref No<span class="pull-right">:&nbsp;</span></p>
+                        </div>
+                        <div class="col-67">
+                            <div class="item-text-wrap">
+                                <p>
+                                    <span ng-bind="item.UserDefine1"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item item-input">
+                        <div class="col-40">
+                            <div class="row" style="margin-left: -5px;">
+                                <div class="col-67">
+                                    <p>Balance<span class="pull-right">:&nbsp;</span></p>
+                                </div>
+                                <div class="col-33">
+                                    <p><span ng-bind="item.QtyBal - item.ScanQty"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-60">
+                            <div class="row" style="margin-left:0px;">
+                                <div class="col-33" style="padding-top:6px;">
+                                    <p>Qty<span class="pull-right">:&nbsp;</p>
+                                </div>
+                                <div class="col-47">
+                                    <input type="number" id="txt-qty-{{ item.BatchLineItemNo }}" ng-model="item.ScanQty" ng-change="checkQty(item);" style="padding-right:1em;padding-top: 0px;">
+                                </div>
+                                <div class="col-20">
+                                    <button class="button button-clear button-small" ng-click="clearInput('qty',item)">
+                                        <i class="icon ion-android-close"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item item-input">
+                        <div class="col-33">
+                            <p>To Store No<span class="pull-right">:&nbsp;</span></p>
+                                </div>
+                                <div class="col-67">
+                                    <div class="row" style="margin-left:0px;">
+                                        <div class="col col-60">
+                                            <input type="text" id="txt-storeno-{{ item.BatchLineItemNo }}" ng-model="item.FromToStoreNo" style="padding-right:1em;padding-top: 0px;" ng-keypress="enter($event)">
+                                        </div>
+                                        <div class="col col-20">
+                                            <button class="button button-clear button-small" ng-click="openCam(item)">
+                                                <i class="icon ion-qr-scanner"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col col-20">
+                                            <button class="button button-clear button-small" ng-click="clearInput('storeno',item)">
+                                                <i class="icon ion-android-close"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </ion-item>
+                </div>
+        </ion-list>
+
     </ion-content>
     <ion-footer-bar class="bar-positive hide-on-keyboard-open" ng-show="Impm1s.length > 0">
         <div class="button-bar">
