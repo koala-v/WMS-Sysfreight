@@ -125,7 +125,11 @@ appControllers.controller('GtListCtrl', [
         */
 
         $scope.checkQty = function (impm1) {
-            // $scope.Impm1s[ 0].tree[0].ScanQty=5;
+            if (impm1.QtyBal - impm1.ScanQty < 0) {
+                PopupService.Alert(popup, 'Balance Not Less Than Zero,Please Check You Enter Qty ').then();
+            } else {
+
+            }
             //       console.log( 'aa');
             //   if ( impm1.ScanQty < 0 ) {
             //       $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].ScanQty = 0;
