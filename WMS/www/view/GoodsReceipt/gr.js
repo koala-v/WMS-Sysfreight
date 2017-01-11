@@ -160,6 +160,7 @@ appControllers.controller('GrDetailCtrl', [
         $scope.$on('$destroy', function () {
             $scope.modal.remove();
         });
+
         var setScanQty = function (barcode, imgr2) {
             if (is.equal(imgr2.SerialNoFlag, 'Y')) {
                 $scope.Detail.Scan.Qty = imgr2.ScanQty;
@@ -167,15 +168,16 @@ appControllers.controller('GrDetailCtrl', [
                 $('#txt-sn').removeAttr('readonly');
             } else {
                 imgr2.ScanQty += 1;
-                hmImgr2.remove(barcode);
+                 hmImgr2.remove(barcode);
                 hmImgr2.set(barcode, imgr2);
+                   var barcode1 = barcode;
                 var objImgr2 = {
                         ScanQty: imgr2.ScanQty
                     },
                     strFilter = 'TrxNo=' + imgr2.TrxNo + ' And LineItemNo=' + imgr2.LineItemNo;
                 SqlService.Update('Imgr2_Receipt', objImgr2, strFilter).then();
                 $scope.Detail.Scan = {
-                    BarCode: '',
+                      BarCode: barcode1,
                     SerialNo: '',
                     SerialNoFlag: imgr2.SerialNoFlag,
                     Qty: imgr2.ScanQty
@@ -321,7 +323,7 @@ appControllers.controller('GrDetailCtrl', [
         $scope.clearInput = function (type) {
             if (is.equal(type, 'BarCode') && is.not.empty($scope.Detail.Scan.BarCode)) {
                 $scope.Detail.Scan = {
-                    BarCode: '',
+                     BarCode: '',
                     SerialNo: '',
                     SerialNoFlag: '',
                     Qty: 0
@@ -340,6 +342,7 @@ appControllers.controller('GrDetailCtrl', [
             if (is.not.empty($scope.Detail.Scan.BarCode)) {
                 if (hmImgr2.count() > 0 && hmImgr2.has($scope.Detail.Scan.BarCode)) {
                     var imgr2 = hmImgr2.get($scope.Detail.Scan.BarCode);
+                    var tmpQty='';
                     var promptPopup = $ionicPopup.show({
                         template: '<input type="number" ng-model="Detail.Scan.Qty">',
                         title: 'Enter Qty',
@@ -350,7 +353,19 @@ appControllers.controller('GrDetailCtrl', [
                         }, {
                             text: '<b>Save</b>',
                             type: 'button-positive',
-                            onTap: function (e) {
+                          onTap: function (e) {
+                    // if(imgr2.SerialNoFlag!=='Y'){
+                    //    if  (imgr2.DimensionFlag==='1'){
+                    //     tmpQty=imgr2.PackingQty;
+                    //    } else if (imgr2.DimensionFlag==='2') {
+                    //      tmpQty=imgr2.WholeQty;
+                    //    }else{
+                    //      tmpQty=imgr2.LooseQty;
+                    //    }
+                    //    if ($scope.Detail.Scan.Qty>=tmpQty){
+                    //      $scope.Detail.Scan.Qty=tmpQty;
+                    //    }
+                    //    }
                                 imgr2.ScanQty = $scope.Detail.Scan.Qty;
                                 var obj = {
                                     ScanQty: imgr2.ScanQty
