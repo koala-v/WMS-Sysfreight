@@ -17,5 +17,10 @@ namespace WebApi.ServiceModel.Tables
 								public string FromToStoreNo { get; set; }
 								public int QtyBal { get; set; }
 								public int ScanQty { get; set; }
-				}
+                                public int TreeLineItemNo { get; set; }
+                                public int objectTrxNo { get; set; }
+
+        
+
+    }
 }

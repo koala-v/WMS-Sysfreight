@@ -89,7 +89,7 @@ namespace WebApi.ServiceModel.Wms
                     {
                         string strSql = "Select Impm1.TrxNo, Impm1.BatchLineItemNo, IsNull(ProductCode,'') AS name, IsNull(ProductCode,'') AS ProductCode," +
                                   "IsNull(ProductName,'') AS ProductName, IsNull(GoodsReceiveorIssueNo,'') AS GoodsReceiveorIssueNo, IsNull(UserDefine1,'') AS UserDefine1," +
-                                  "b.QtyBal, '' AS FromToStoreNo, 0 AS ScanQty " +
+                                  "b.QtyBal, '' AS FromToStoreNo, 0 AS ScanQty , '' as TreeLineItemNo ,''objectTrxNo  " +
                                   "From Impm1 Join (Select (Select top 1 Imit1.StatusCode from imit1 Where imit1.GoodsTransferNoteNo = a.GoodsReceiveorIssueNo) AS ImitStatus, a.TrxNo, " +
                                   "(CASE a.DimensionFlag When '1' THEN a.BalancePackingQty When '2' THEN a.BalanceWholeQty ELSE a.BalanceLooseQty END) AS QtyBal From Impm1 a ) b on b.TrxNo = impm1.TrxNo " +
                                   "Where WarehouseCode='" + request.WarehouseCode + "' And ( impm1.TrxType =1 or impm1.TrxType =3) And StoreNo='" + request.StoreNo + "' And (b.ImitStatus = 'EXE' or ImitStatus is null) And b.QtyBal>0  ";
@@ -109,6 +109,8 @@ namespace WebApi.ServiceModel.Wms
                                 if (ResultTree.name.Equals(BatchNo))
                                 {
                                     blnExistBatchNo = true;
+                                    impm1.TreeLineItemNo = ResultTree.tree.Count;
+                                    impm1.objectTrxNo = ResultTree.tree[0].objectTrxNo;
                                     ResultTree.tree.Add(impm1);
                                 }
                             }
@@ -117,6 +119,8 @@ namespace WebApi.ServiceModel.Wms
                                 Impm1_Transfer_Tree impm1_tree = new Impm1_Transfer_Tree();
                                 impm1_tree.name = BatchNo;
                                 impm1_tree.tree = new List<Impm1_Transfer>();
+                                impm1.TreeLineItemNo = 0;
+                                impm1.objectTrxNo = ResultTrees.Count;
                                 impm1_tree.tree.Add(impm1);
                                 ResultTrees.Add(impm1_tree);
                             }

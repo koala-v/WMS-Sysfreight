@@ -5,8 +5,10 @@ appControllers.controller('GtListCtrl', [
     '$timeout',
     '$ionicPopup',
     '$ionicLoading',
+    '$cordovaBarcodeScanner',
     'ApiService',
     'PopupService',
+    'ENV',
     function (
         $scope,
         $stateParams,
@@ -14,8 +16,10 @@ appControllers.controller('GtListCtrl', [
         $timeout,
         $ionicPopup,
         $ionicLoading,
+        $cordovaBarcodeScanner,
         ApiService,
-        PopupService) {
+        PopupService,
+        ENV) {
         var popup = null;
         var popupTitle = '';
         $scope.Whwh1 = {};
@@ -101,12 +105,12 @@ appControllers.controller('GtListCtrl', [
         $scope.isGroupShown = function (group) {
             return group.show;
         };
-        /*
+
         $scope.openCam = function ( impm1 ) {
             if(!ENV.fromWeb){
                 $cordovaBarcodeScanner.scan().then( function ( imageData ) {
-                    $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].FromToStoreNo = imageData.text;
-                    $( '#txt-storeno-' + impm1.BatchLineItemNo ).select();
+                    $scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo = imageData.text;
+                    // $( '#txt-storeno-' + $scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo ).select();
                 }, function ( error ) {
                     $cordovaToast.showShortBottom( error );
                 } );
@@ -117,12 +121,12 @@ appControllers.controller('GtListCtrl', [
                 $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].ScanQty = 0;
                 $( '#txt-qty-' + impm1.BatchLineItemNo ).select();
             } else {
-                $scope.Impm1s[ impm1.BatchLineItemNo - 1 ].FromToStoreNo = '';
-                $( '#txt-storeno-' + impm1.BatchLineItemNo ).select();
+            $scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo = '';
+                // $( '#txt-storeno-' + $scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo ).select();
             }
         };
 
-        */
+
 
         $scope.checkQty = function (impm1) {
             if (impm1.QtyBal - impm1.ScanQty < 0) {
