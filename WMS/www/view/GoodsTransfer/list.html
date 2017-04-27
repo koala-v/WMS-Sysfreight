@@ -38,7 +38,7 @@
                 <div class="col col-67">
                     <ui-select theme="bootstrap" ng-model="Whwh2.selected" reset-search-input="true" on-select="showImpm1(null,Whwh2.selected.StoreNo)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.StoreNo}}</ui-select-match>
-                        <ui-select-choices repeat="Whwh2 in Whwh2s track by $index" refresh="refreshWhwh2($select.search)" refresh-delay="0" position="down">
+                        <ui-select-choices repeat="Whwh2 in Whwh2s track by $index" refresh="refreshWhwh2($select.search,'')" refresh-delay="0" position="down">
                             <div ng-bind-html="Whwh2.StoreNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
@@ -128,7 +128,7 @@
                                 <div class="col-67">
                                     <div class="row" style="margin-left:0px;">
                                         <div class="col col-60">
-                                            <input type="text" id="txt-storeno-{{ item.BatchLineItemNo }}" ng-model="item.FromToStoreNo" style="padding-right:1em;padding-top: 0px;" ng-keypress="enter($event)">
+                                            <input type="text" id="txt-storeno-{{ item.BatchLineItemNo }}" ng-model="item.FromToStoreNo" style="padding-right:1em;padding-top: 0px;" ng-keypress="enter($event,item)">
                                         </div>
                                         <div class="col col-20">
                                             <button class="button  button-clear button-positive button-small" ng-click="openCam(item)">

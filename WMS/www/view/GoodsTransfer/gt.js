@@ -46,13 +46,24 @@ appControllers.controller('GtListCtrl', [
                 $scope.clearImpm1s();
             }
         };
-        $scope.refreshWhwh2 = function (StoreNo) {
+        $scope.refreshWhwh2 = function (StoreNo,VerifyStoreNo) {
             if (is.not.empty($scope.Whwh1) && is.not.undefined(StoreNo) && is.not.empty(StoreNo)) {
                 var objUri = ApiService.Uri(true, '/api/wms/whwh2');
                 objUri.addSearch('WarehouseCode', $scope.Whwh1.selected.WarehouseCode);
                 objUri.addSearch('StoreNo', StoreNo);
+                  objUri.addSearch('VerifyStoreNo', VerifyStoreNo);
                 ApiService.Get(objUri, false).then(function success(result) {
-                    $scope.Whwh2s = result.data.results;
+                  if (VerifyStoreNo==='Y'){
+                    if(result.data.results.length >0)
+                    {
+
+                    }else{
+                        PopupService.Alert(popup, 'Please Enter Current StoreNo ').then();
+                    }
+                  }else{
+                      $scope.Whwh2s = result.data.results;
+                  }
+
                 });
             }
         };
@@ -106,11 +117,13 @@ appControllers.controller('GtListCtrl', [
             return group.show;
         };
 
+
         $scope.openCam = function ( impm1 ) {
             if(!ENV.fromWeb){
                 $cordovaBarcodeScanner.scan().then( function ( imageData ) {
                     $scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo = imageData.text;
                     // $( '#txt-storeno-' + $scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo ).select();
+$scope.refreshWhwh2($scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo,'Y');
                 }, function ( error ) {
                     $cordovaToast.showShortBottom( error );
                 } );
@@ -126,7 +139,21 @@ appControllers.controller('GtListCtrl', [
             }
         };
 
+        $scope.enter = function (ev,impm1) {
+            if (is.equal(ev.keyCode, 13)) {
+                if (is.null(popup)) {
 
+                    $scope.refreshWhwh2($scope.Impm1s[impm1.objectTrxNo ].tree[impm1.TreeLineItemNo].FromToStoreNo,'Y');
+
+                } else {
+                    popup.close();
+                    popup = null;
+                }
+                if (!ENV.fromWeb) {
+                    $cordovaKeyboard.close();
+                }
+            }
+        };
 
         $scope.checkQty = function (impm1) {
             if (impm1.QtyBal - impm1.ScanQty < 0) {
